@@ -230,13 +230,57 @@
       transform: translateY(-1px);
       background: rgba(255,255,255,0.09);
       border-color: rgba(255,255,255,0.28);
-    }
     .btn.primary{
-      background: rgba(255,255,255,0.16);
-      border-color: rgba(255,255,255,0.28);
-    }
-    .btn.primary:hover{
-      background: rgba(255,255,255,0.2);
+  position: relative;
+  background: linear-gradient(
+    135deg,
+    #2563eb 0%,
+    #3b82f6 45%,
+    #38bdf8 100%
+  );
+  color: #ffffff;
+  border: none;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow:
+    0 8px 24px rgba(37, 99, 235, 0.35),
+    inset 0 1px 0 rgba(255,255,255,0.25);
+  overflow: hidden;
+}
+
+/* subtle shine sweep */
+.btn.primary::after{
+  content:"";
+  position:absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,0.25) 45%,
+    transparent 60%
+  );
+  transform: translateX(-120%);
+  transition: transform .6s ease;
+}
+
+/* hover / focus */
+.btn.primary:hover{
+  transform: translateY(-2px);
+  box-shadow:
+    0 14px 34px rgba(37, 99, 235, 0.45),
+    inset 0 1px 0 rgba(255,255,255,0.35);
+}
+
+.btn.primary:hover::after{
+  transform: translateX(120%);
+}
+
+/* active */
+.btn.primary:active{
+  transform: translateY(0);
+  box-shadow:
+    0 6px 18px rgba(37, 99, 235, 0.35);
+}
     }
     .mini{
       margin-top: 12px;
