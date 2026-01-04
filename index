@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Practical AI, Design & Marketing Help</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Hands-on AI training, product design, app & web design, and marketing support for small businesses." />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #fafafa;
+      color: #111;
+      line-height: 1.6;
+    }
+    main {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 64px 24px;
+    }
+    h1 {
+      font-size: 2.2rem;
+      margin-bottom: 0.5em;
+    }
+    h2 {
+      margin-top: 2em;
+    }
+    p {
+      margin: 1em 0;
+    }
+    ul {
+      padding-left: 1.2em;
+    }
+    li {
+      margin: 0.5em 0;
+    }
+    .cta {
+      margin-top: 2.5em;
+      padding: 1.25em;
+      background: #111;
+      color: #fff;
+      border-radius: 8px;
+    }
+    .cta a {
+      color: #fff;
+      font-weight: 600;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Practical AI, Product Design & Marketing Help</h1>
+
+    <p>
+      I help small businesses and individuals use technology in practical, human ways —
+      without buzzwords or overwhelm.
+    </p>
+
+    <h2>AI & Automation</h2>
+    <ul>
+      <li>Hands-on ChatGPT training using your real work</li>
+      <li>Automating repetitive tasks (emails, summaries, content, admin)</li>
+      <li>Building simple custom tools with AI — no technical background needed</li>
+    </ul>
+
+    <h2>Product, App & Web Design</h2>
+    <ul>
+      <li>Website and mobile app design</li>
+      <li>Improving user experience and workflows</li>
+      <li>Turning ideas into simple, usable products</li>
+    </ul>
+
+    <h2>Marketing & Advertising Support</h2>
+    <ul>
+      <li>Messaging and content creation</li>
+      <li>Campaign planning and setup</li>
+      <li>Using AI to streamline marketing workflows</li>
+    </ul>
+
+    <div class="cta">
+      <p>
+        Curious if this could help your business?
+        <br />
+        Email me at <a href="mailto:you@yourdomain.com">you@yourdomain.com</a>
+        or reach out on Nextdoor.
+      </p>
+    </div>
+  </main>
+</body>
+</html>
