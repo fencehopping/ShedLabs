@@ -10,22 +10,27 @@
   <meta property="og:title" content="Shed Design Labs" />
   <meta property="og:description" content="Hands-on AI, product design, and marketing help for small businesses." />
   <meta property="og:type" content="website" />
-  <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-QJW7XGQ5T8"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
 
-  gtag('config', 'G-QJW7XGQ5T8');
-</script>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJW7XGQ5T8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-QJW7XGQ5T8');
+  </script>
+
   <style>
     :root{
       --text: rgba(255,255,255,0.92);
       --muted: rgba(255,255,255,0.68);
       --radius: 18px;
       --max: 1040px;
+      --border: rgba(255,255,255,0.12);
+      --surface: rgba(255,255,255,0.045);
+      --surface2: rgba(255,255,255,0.03);
     }
+
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
@@ -34,285 +39,12 @@
       color: var(--text);
       line-height: 1.55;
 
-           /* SINGLE smooth background gradient (no seams) */
       background: linear-gradient(180deg, #070b14 0%, #0a1224 45%, #070b14 100%);
       position: relative;
       overflow-x: hidden;
     }
 
-    /* --- Services (clean + structured) --- */
-.section{
-  margin-top: 26px;
-}
-
-.section-kicker{
-  font-size: 12.5px;
-  color: rgba(255,255,255,0.70);
-  letter-spacing: 0.2px;
-  text-transform: uppercase;
-}
-
-.section-title{
-  margin: 8px 0 10px;
-  font-size: 22px;
-  letter-spacing: -0.2px;
-  color: rgba(255,255,255,0.92);
-}
-
-.section-lede{
-  margin: 0 0 16px;
-  color: rgba(255,255,255,0.70);
-  max-width: 70ch;
-}
-
-.services-grid{
-  display:grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 14px;
-}
-
-.service-card{
-  grid-column: span 6;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.045);
-  border-radius: var(--radius);
-  padding: 18px;
-}
-
-@media (max-width: 860px){
-  .service-card{grid-column: span 12;}
-}
-
-.card-head{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.card-icon{
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.04);
-  display:grid;
-  place-items:center;
-  flex: 0 0 auto;
-}
-
-.card-icon svg{
-  width: 20px;
-  height: 20px;
-  opacity: 0.95;
-}
-
-.card-title{
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: -0.1px;
-}
-
-.card-sub{
-  margin: 0;
-  color: rgba(255,255,255,0.70);
-  font-size: 13.5px;
-}
-
-.feature-list{
-  list-style:none;
-  padding: 0;
-  margin: 14px 0 0;
-  display:grid;
-  gap: 10px;
-}
-
-.feature{
-  display:grid;
-  grid-template-columns: 18px 1fr;
-  gap: 10px;
-  align-items:start;
-  padding: 10px 10px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.03);
-  border-radius: 14px;
-}
-
-.feature .tick{
-  width: 18px; height: 18px;
-  border-radius: 9px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.04);
-  display:grid; place-items:center;
-  margin-top: 1px;
-}
-.feature .tick svg{width: 12px; height: 12px; opacity: 0.95;}
-
-.feature strong{
-  display:block;
-  font-size: 13.5px;
-  margin-bottom: 2px;
-}
-.feature span{
-  display:block;
-  font-size: 12.75px;
-  color: rgba(255,255,255,0.70);
-  line-height: 1.35;
-}
-
-.marketing-grid{
-  display:grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 14px;
-  margin-top: 14px;
-}
-.marketing-card{
-  grid-column: span 4;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.045);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-@media (max-width: 860px){
-  .marketing-card{grid-column: span 12;}
-}
-
-.small-title{
-  margin: 0;
-  font-size: 16px;
-  letter-spacing: -0.1px;
-}
-.small-sub{
-  margin: 6px 0 12px;
-  font-size: 13.25px;
-  color: rgba(255,255,255,0.70);
-}
-
-.bullets{
-  margin: 0;
-  padding-left: 18px;
-  color: rgba(255,255,255,0.86);
-}
-
-/* --- Services grid layout --- */
-.services-wrap{ margin-top: 22px; }
-
-.services-head{
-  margin: 28px 0 14px;
-}
-.services-head h2{
-  margin: 0 0 6px;
-  font-size: 22px;
-  letter-spacing: -0.2px;
-}
-.services-head p{
-  margin: 0;
-  color: rgba(255,255,255,0.70);
-  max-width: 72ch;
-}
-
-.cards-2{
-  display:grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 14px;
-}
-
-.cards-3{
-  display:grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 14px;
-  margin-top: 14px;
-}
-
-.service-card{
-  grid-column: span 6;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.045);
-  border-radius: var(--radius);
-  padding: 18px;
-}
-
-.mini-card{
-  grid-column: span 4;
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.045);
-  border-radius: var(--radius);
-  padding: 16px;
-}
-
-@media (max-width: 860px){
-  .service-card{ grid-column: span 12; }
-  .mini-card{ grid-column: span 12; }
-}
-
-.card-top{
-  display:flex;
-  align-items:center;
-  gap: 12px;
-  margin-bottom: 10px;
-}
-
-.card-icon{
-  width: 42px;
-  height: 42px;
-  border-radius: 14px;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.04);
-  display:grid;
-  place-items:center;
-  flex: 0 0 auto;
-}
-
-.card-icon svg{
-  width: 20px;
-  height: 20px;
-  opacity: 0.95;
-}
-
-.card-title{
-  margin: 0;
-  font-size: 18px;
-  letter-spacing: -0.1px;
-}
-
-.card-sub{
-  margin: 2px 0 0;
-  color: rgba(255,255,255,0.70);
-  font-size: 13.5px;
-}
-
-.clean-list{
-  margin: 12px 0 0;
-  padding: 0;
-  list-style: none;
-  display:grid;
-  gap: 10px;
-}
-
-.clean-item{
-  padding: 10px 10px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.03);
-  border-radius: 14px;
-  color: rgba(255,255,255,0.86);
-  font-size: 13.5px;
-  line-height: 1.35;
-}
-
-.clean-item strong{
-  display:block;
-  margin-bottom: 2px;
-  color: rgba(255,255,255,0.92);
-}
-.clean-item span{
-  display:block;
-  color: rgba(255,255,255,0.70);
-  font-size: 12.75px;
-}
-    
-.bullets li{margin: 7px 0;}
-
-    /* Subtle glow layer (very faint) */
+    /* Subtle glow */
     body::after{
       content:"";
       position: fixed;
@@ -327,7 +59,7 @@
       transform: translateZ(0);
     }
 
-    /* Noise overlay to eliminate gradient banding */
+    /* Noise overlay to reduce banding */
     body::before{
       content:"";
       position: fixed;
@@ -335,8 +67,6 @@
       pointer-events:none;
       z-index: 0;
       opacity: 0.06;
-
-      /* Lightweight procedural noise using repeating gradients */
       background-image:
         repeating-linear-gradient(0deg,
           rgba(255,255,255,0.02) 0px,
@@ -354,7 +84,7 @@
       transform: translateZ(0);
     }
 
-    /* Keep all content above overlays */
+    /* Keep content above overlays */
     .wrap{ position: relative; z-index: 1; }
 
     a{color:inherit}
@@ -379,9 +109,9 @@
       min-width: 240px;
     }
     .logo{
-      height: 200px;    /* bigger logo */
+      height: 120px;  /* keep big, but not ridiculous */
       width: auto;
-      padding: 0;      /* no box */
+      padding: 0;
       border: none;
       background: none;
       object-fit: contain;
@@ -427,7 +157,7 @@
 
     /* Hero */
     .hero{
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid var(--border);
       background: rgba(255,255,255,0.05);
       border-radius: var(--radius);
       box-shadow: 0 18px 50px rgba(0,0,0,0.45);
@@ -435,7 +165,6 @@
       overflow:hidden;
       position:relative;
     }
-    /* Removed hero overlay that caused visual “pattern” */
     .hero-grid{
       display:grid;
       grid-template-columns: 1.2fr 0.8fr;
@@ -446,6 +175,7 @@
       .hero-grid{grid-template-columns: 1fr;}
       .nav{justify-content:flex-start}
     }
+
     .badge{
       display:inline-flex;
       gap:8px;
@@ -465,6 +195,7 @@
       background: rgba(255,255,255,0.8);
       opacity: .7;
     }
+
     h1{
       margin: 14px 0 10px;
       font-size: clamp(32px, 4vw, 48px);
@@ -477,257 +208,230 @@
       font-size: 16.5px;
       max-width: 62ch;
     }
+
     .cta-row{
       display:flex;
       gap:12px;
       flex-wrap:wrap;
       margin-top: 16px;
+      align-items:center;
     }
+
     .btn{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  gap:10px;
-  text-decoration:none;
-  border-radius: 14px;
-  padding: 12px 14px;
-  border: 1px solid rgba(255,255,255,0.18);
-  background: rgba(255,255,255,0.06);
-  color: rgba(255,255,255,0.92);
-  font-weight: 650;
-  font-size: 14px;
-  transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-}
-
-.btn:hover{
-  transform: translateY(-1px);
-  background: rgba(255,255,255,0.09);
-  border-color: rgba(255,255,255,0.28);
-}
-
-/* SEXY PRIMARY CTA */
-.btn.primary{
-  position: relative;
-  background: linear-gradient(135deg, #2563eb 0%, #3b82f6 45%, #38bdf8 100%);
-  color: #ffffff;
-  border: none;
-  font-weight: 800;
-  letter-spacing: 0.2px;
-  box-shadow:
-    0 10px 28px rgba(37, 99, 235, 0.40),
-    inset 0 1px 0 rgba(255,255,255,0.25);
-  overflow: hidden;
-}
-
-/* subtle shine sweep */
-.btn.primary::after{
-  content:"";
-  position:absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255,255,255,0.28) 45%,
-    transparent 60%
-  );
-  transform: translateX(-120%);
-  transition: transform .6s ease;
-}
-
-/* hover */
-.btn.primary:hover{
-  transform: translateY(-2px);
-  box-shadow:
-    0 16px 40px rgba(37, 99, 235, 0.52),
-    inset 0 1px 0 rgba(255,255,255,0.35);
-}
-
-.btn.primary:hover::after{
-  transform: translateX(120%);
-}
-
-/* active */
-.btn.primary:active{
-  transform: translateY(0px);
-  box-shadow:
-    0 8px 22px rgba(37, 99, 235, 0.40);
-}
-
-/* subtle shine sweep */
-.btn.primary::after{
-  content:"";
-  position:absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255,255,255,0.25) 45%,
-    transparent 60%
-  );
-  transform: translateX(-120%);
-  transition: transform .6s ease;
-}
-
-/* hover / focus */
-.btn.primary:hover{
-  transform: translateY(-2px);
-  box-shadow:
-    0 14px 34px rgba(37, 99, 235, 0.45),
-    inset 0 1px 0 rgba(255,255,255,0.35);
-}
-
-.btn.primary:hover::after{
-  transform: translateX(120%);
-}
-
-/* active */
-.btn.primary:active{
-  transform: translateY(0);
-  box-shadow:
-    0 6px 18px rgba(37, 99, 235, 0.35);
-}
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      text-decoration:none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.92);
+      font-weight: 650;
+      font-size: 14px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
     }
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.28);
+    }
+
+    /* Sexy primary CTA */
+    .btn.primary{
+      position: relative;
+      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 45%, #38bdf8 100%);
+      color: #ffffff;
+      border: none;
+      font-weight: 800;
+      letter-spacing: 0.2px;
+      box-shadow:
+        0 10px 28px rgba(37, 99, 235, 0.40),
+        inset 0 1px 0 rgba(255,255,255,0.25);
+      overflow: hidden;
+      padding: 13px 18px;
+      min-width: 210px;
+    }
+    .btn.primary::after{
+      content:"";
+      position:absolute;
+      inset: 0;
+      background: linear-gradient(
+        120deg,
+        transparent 30%,
+        rgba(255,255,255,0.28) 45%,
+        transparent 60%
+      );
+      transform: translateX(-120%);
+      transition: transform .6s ease;
+    }
+    .btn.primary:hover{
+      transform: translateY(-2px);
+      box-shadow:
+        0 16px 40px rgba(37, 99, 235, 0.52),
+        inset 0 1px 0 rgba(255,255,255,0.35);
+    }
+    .btn.primary:hover::after{ transform: translateX(120%); }
+    .btn.primary:active{
+      transform: translateY(0px);
+      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.40);
+    }
+
     .mini{
       margin-top: 12px;
       font-size: 13px;
       color: rgba(255,255,255,0.65);
     }
 
-    /* Cards */
+    /* Side card */
     .sidecard{
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.035);
-  border-radius: var(--radius);
-  padding: 18px;
-}
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.035);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .sidecard h3{
+      margin: 0 0 8px;
+      font-size: 15px;
+      letter-spacing: 0.2px;
+    }
+    .sidecard p{
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13.5px;
+    }
+    .list{
+      margin: 0;
+      padding-left: 18px;
+      color: rgba(255,255,255,0.86);
+      font-size: 13.5px;
+    }
+    .list li{margin: 8px 0;}
 
-.quickcard h3{
-  margin: 0 0 6px;
-  font-size: 16px;
-  letter-spacing: 0.2px;
-}
+    /* --------- SERVICES (this is the grid you want) --------- */
+    .services{
+      margin-top: 26px;
+    }
+    .services-head{
+      margin: 0 0 14px;
+    }
+    .services-kicker{
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.70);
+      letter-spacing: 0.2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .services-title{
+      margin: 0 0 8px;
+      font-size: 22px;
+      letter-spacing: -0.2px;
+    }
+    .services-lede{
+      margin: 0;
+      color: rgba(255,255,255,0.70);
+      max-width: 72ch;
+    }
 
-.quickcard .subhead{
-  margin: 0 0 14px;
-  color: var(--muted);
-  font-size: 13.5px;
-}
+    .cards-2, .cards-3{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .cards-3{ margin-top: 14px; }
 
-.cta-row .btn.primary{
-  padding: 13px 18px;
-  min-width: 210px;
-}
-    
-.quicklist{
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 10px;
-}
+    .service-card{
+      grid-column: span 6;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .mini-card{
+      grid-column: span 4;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
 
-.quickitem{
-  display: grid;
-  grid-template-columns: 22px 1fr;
-  gap: 10px;
-  align-items: start;
-  padding: 10px 10px;
-  border: 1px solid rgba(255,255,255,0.10);
-  background: rgba(255,255,255,0.03);
-  border-radius: 14px;
-}
+    @media (max-width: 860px){
+      .service-card{ grid-column: span 12; }
+      .mini-card{ grid-column: span 12; }
+    }
 
-.check{
-  width: 22px;
-  height: 22px;
-  border-radius: 10px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(255,255,255,0.14);
-  background: rgba(255,255,255,0.04);
-}
-
-.check svg{
-  width: 14px;
-  height: 14px;
-  opacity: 0.95;
-}
-
-.quickitem strong{
-  display:block;
-  font-size: 13.5px;
-  margin: 0 0 2px;
-}
-
-.quickitem span{
-  display:block;
-  color: rgba(255,255,255,0.70);
-  font-size: 12.75px;
-  line-height: 1.35;
-}
-
-.outcomes{
-  margin-top: 14px;
-  border-top: 1px solid rgba(255,255,255,0.10);
-  padding-top: 12px;
-  display: grid;
-  gap: 10px;
-}
-
-.outcome-row{
-  display:flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.pill{
-  font-size: 12.5px;
-  color: rgba(255,255,255,0.78);
-  border: 1px solid rgba(255,255,255,0.12);
-  background: rgba(255,255,255,0.03);
-  padding: 7px 10px;
-  border-radius: 999px;
-}
-
-.quickcta{
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.10);
-  display:flex;
-  gap:10px;
-  flex-wrap:wrap;
-}
-
-    /* Icon headers */
-    .section-head{
+    .card-top{
       display:flex;
       align-items:center;
-      gap:10px;
-      margin-bottom: 8px;
+      gap: 12px;
+      margin-bottom: 10px;
     }
-    .icon{
-      width: 34px;
-      height: 34px;
-      border-radius: 12px;
+    .card-icon{
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
       border: 1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.04);
       display:grid;
       place-items:center;
       flex: 0 0 auto;
     }
-    .icon svg{
-      width: 18px;
-      height: 18px;
-      opacity: 0.9;
+    .card-icon svg{
+      width: 20px;
+      height: 20px;
+      opacity: 0.95;
     }
-    .card h2{
-      margin:0;
+
+    .card-title{
+      margin: 0;
       font-size: 18px;
+      letter-spacing: -0.1px;
+    }
+    .card-sub{
+      margin: 2px 0 0;
+      color: rgba(255,255,255,0.70);
+      font-size: 13.5px;
+    }
+
+    .clean-list{
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+      display:grid;
+      gap: 10px;
+    }
+    .clean-item{
+      padding: 10px 10px;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: var(--surface2);
+      border-radius: 14px;
+      color: rgba(255,255,255,0.86);
+      font-size: 13.5px;
+      line-height: 1.35;
+    }
+    .clean-item strong{
+      display:block;
+      margin-bottom: 2px;
+      color: rgba(255,255,255,0.92);
+    }
+    .clean-item span{
+      display:block;
+      color: rgba(255,255,255,0.70);
+      font-size: 12.75px;
+    }
+
+    /* Section title reused for Marketing + Contact */
+    .section-title{
+      margin: 30px 0 12px;
+      font-size: 18px;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.2px;
     }
 
     /* Form */
     .form{
-      border: 1px solid rgba(255,255,255,0.12);
+      border: 1px solid var(--border);
       background: rgba(255,255,255,0.035);
       border-radius: var(--radius);
       padding: 18px;
@@ -780,7 +484,7 @@
 
     /* Small-screen logo tweak */
     @media (max-width: 520px){
-      .logo{height: 44px;}
+      .logo{height: 56px;}
     }
   </style>
 </head>
@@ -800,8 +504,7 @@
       </div>
 
       <nav class="nav" aria-label="Primary">
-        <a class="chip" href="#ai">AI & Automation</a>
-        <a class="chip" href="#design">Design</a>
+        <a class="chip" href="#services">Services</a>
         <a class="chip" href="#marketing">Marketing</a>
         <a class="chip" href="#contact">Contact</a>
       </nav>
@@ -819,6 +522,7 @@
 
           <div class="cta-row">
             <a class="btn primary" href="#contact">Request a consult</a>
+            <a class="btn" href="mailto:hello@shedlabs.studio">Email: hello@shedlabs.studio</a>
           </div>
 
           <p class="mini">
@@ -839,109 +543,148 @@
       </div>
     </section>
 
-    <div class="grid">
-      <section id="ai" class="card">
-        <div class="section-head">
-          <div class="icon" aria-hidden="true">
-            <!-- Placeholder icon (spark) -->
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M12 2l1.2 5.2L18 9l-4.8 1.8L12 16l-1.2-5.2L6 9l4.8-1.8L12 2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
-              <path d="M19 14l.7 3 2.3.9-2.3.9L19 22l-.7-3-2.3-.9 2.3-.9.7-3z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
-            </svg>
-          </div>
-          <h2>AI & Automation</h2>
-        </div>
-        <p>Hands-on help to save time and reduce repetitive work — set up once, reuse forever.</p>
-        <ul>
-          <li>ChatGPT training tailored to your business (emails, customer replies, content, planning)</li>
-          <li>Automation for busywork (summaries, templates, proposals, internal docs)</li>
-          <li>Simple custom tools using AI (no coding background needed)</li>
-        </ul>
-      </section>
-
-      <section id="design" class="card">
-        <div class="section-head">
-          <div class="icon" aria-hidden="true">
-            <!-- Placeholder icon (layout) -->
-            <svg viewBox="0 0 24 24" fill="none">
-              <path d="M4 5h16v14H4V5z" stroke="white" stroke-width="1.6" />
-              <path d="M4 9h16" stroke="white" stroke-width="1.6" />
-              <path d="M9 9v10" stroke="white" stroke-width="1.6" />
-            </svg>
-          </div>
-          <h2>Product, App & Web Design</h2>
-        </div>
-        <p>Make your product feel clearer, faster, and more trustworthy — with a practical design process.</p>
-        <ul>
-          <li>App and web UX/UI design (new builds or refreshes)</li>
-          <li>Workflow and usability improvements</li>
-          <li>Design systems and reusable components</li>
-        </ul>
-      </section>
-    </div>
-
-    <h3 id="marketing" class="section-title">Marketing & Advertising Support</h3>
-    <div class="grid" style="margin-top: 12px;">
-      <section class="card" style="grid-column: span 12;">
-        <p style="margin:0 0 12px; color: rgba(255,255,255,0.74);">
-          Help with messaging, creative direction, and campaign execution — plus AI workflows to keep things moving.
+    <!-- ✅ Services Grid (THIS replaces your old “grid/card” section) -->
+    <section class="services" id="services">
+      <div class="services-head">
+        <div class="services-kicker">Services</div>
+        <h2 class="services-title">Practical help that ships</h2>
+        <p class="services-lede">
+          Pick a quick win or a bigger engagement — either way, the goal is momentum: save time, ship faster, and look more premium.
         </p>
-        <div class="grid" style="margin-top: 0;">
-          <div class="card" style="grid-column: span 4;">
-            <div class="section-head">
-              <div class="icon" aria-hidden="true">
-                <!-- Placeholder icon (chat) -->
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M5 6h14v9H8l-3 3V6z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <h2 style="font-size:16px;">Messaging & Content</h2>
+      </div>
+
+      <div class="cards-2">
+        <!-- AI -->
+        <section id="ai" class="service-card">
+          <div class="card-top">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 2l1.2 5.2L18 9l-4.8 1.8L12 16l-1.2-5.2L6 9l4.8-1.8L12 2z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+                <path d="M19 14l.7 3 2.3.9-2.3.9L19 22l-.7-3-2.3-.9 2.3-.9.7-3z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
             </div>
-            <ul>
-              <li>Positioning and value props</li>
-              <li>Landing page copy direction</li>
-              <li>Content planning + templates</li>
-            </ul>
+            <div>
+              <h3 class="card-title">AI & Automation</h3>
+              <p class="card-sub">Set up once, reuse forever.</p>
+            </div>
           </div>
 
-          <div class="card" style="grid-column: span 4;">
-            <div class="section-head">
-              <div class="icon" aria-hidden="true">
-                <!-- Placeholder icon (target) -->
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18z" stroke="white" stroke-width="1.6"/>
-                  <path d="M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" stroke="white" stroke-width="1.6"/>
-                  <path d="M12 12h6" stroke="white" stroke-width="1.6"/>
-                </svg>
-              </div>
-              <h2 style="font-size:16px;">Campaign Setup</h2>
+          <ul class="clean-list">
+            <li class="clean-item">
+              <strong>ChatGPT training tailored to your business</strong>
+              <span>Emails, customer replies, content, planning, internal docs.</span>
+            </li>
+            <li class="clean-item">
+              <strong>Automation for busywork</strong>
+              <span>Summaries, templates, proposals, repeatable weekly workflows.</span>
+            </li>
+            <li class="clean-item">
+              <strong>Simple custom tools using AI</strong>
+              <span>No coding background needed — we keep it practical.</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Design -->
+        <section id="design" class="service-card">
+          <div class="card-top">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 5h16v14H4V5z" stroke="white" stroke-width="1.8" />
+                <path d="M4 9h16" stroke="white" stroke-width="1.8" />
+                <path d="M9 9v10" stroke="white" stroke-width="1.8" />
+              </svg>
             </div>
-            <ul>
-              <li>Creative + targeting guidance</li>
-              <li>Ad variations & testing plans</li>
-              <li>Simple reporting dashboards</li>
-            </ul>
+            <div>
+              <h3 class="card-title">Product, App & Web Design</h3>
+              <p class="card-sub">Clarity, speed, and trust.</p>
+            </div>
           </div>
 
-          <div class="card" style="grid-column: span 4;">
-            <div class="section-head">
-              <div class="icon" aria-hidden="true">
-                <!-- Placeholder icon (bolt) -->
-                <svg viewBox="0 0 24 24" fill="none">
-                  <path d="M13 2L4 14h7l-1 8 10-14h-7l0-6z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
-                </svg>
-              </div>
-              <h2 style="font-size:16px;">AI for Marketing Ops</h2>
+          <ul class="clean-list">
+            <li class="clean-item">
+              <strong>UX/UI design (new builds or refreshes)</strong>
+              <span>From wireframes to polished UI — shipped-ready.</span>
+            </li>
+            <li class="clean-item">
+              <strong>Workflow & usability improvements</strong>
+              <span>Reduce steps, remove confusion, increase conversion.</span>
+            </li>
+            <li class="clean-item">
+              <strong>Design systems & reusable components</strong>
+              <span>Consistent UI, faster iteration, fewer one-offs.</span>
+            </li>
+          </ul>
+        </section>
+      </div>
+
+      <!-- Marketing -->
+      <h3 id="marketing" class="section-title">Marketing & Advertising Support</h3>
+      <p style="margin:0 0 12px; color: rgba(255,255,255,0.70); max-width: 72ch;">
+        Help with messaging, creative direction, and campaign execution — plus AI workflows to keep things moving.
+      </p>
+
+      <div class="cards-3">
+        <section class="mini-card">
+          <div class="card-top">
+            <div class="card-icon" aria-hidden="true" style="width:38px;height:38px;border-radius:13px;">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M5 6h14v9H8l-3 3V6z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
             </div>
-            <ul>
-              <li>Reusable prompts + workflows</li>
-              <li>Weekly content generation</li>
-              <li>Repurpose long → short content</li>
-            </ul>
+            <div>
+              <h3 class="card-title" style="font-size:16px;">Messaging & Content</h3>
+              <p class="card-sub">Clarity that converts.</p>
+            </div>
           </div>
-        </div>
-      </section>
-    </div>
+          <ul class="clean-list">
+            <li class="clean-item"><strong>Positioning and value props</strong></li>
+            <li class="clean-item"><strong>Landing page copy direction</strong></li>
+            <li class="clean-item"><strong>Content planning + templates</strong></li>
+          </ul>
+        </section>
+
+        <section class="mini-card">
+          <div class="card-top">
+            <div class="card-icon" aria-hidden="true" style="width:38px;height:38px;border-radius:13px;">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18z" stroke="white" stroke-width="1.8"/>
+                <path d="M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" stroke="white" stroke-width="1.8"/>
+                <path d="M12 12h6" stroke="white" stroke-width="1.8"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title" style="font-size:16px;">Campaign Setup</h3>
+              <p class="card-sub">Simple tests, real signals.</p>
+            </div>
+          </div>
+          <ul class="clean-list">
+            <li class="clean-item"><strong>Creative + targeting guidance</strong></li>
+            <li class="clean-item"><strong>Ad variations & testing plans</strong></li>
+            <li class="clean-item"><strong>Simple reporting dashboards</strong></li>
+          </ul>
+        </section>
+
+        <section class="mini-card">
+          <div class="card-top">
+            <div class="card-icon" aria-hidden="true" style="width:38px;height:38px;border-radius:13px;">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M13 2L4 14h7l-1 8 10-14h-7l0-6z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="card-title" style="font-size:16px;">AI for Marketing Ops</h3>
+              <p class="card-sub">Keep it moving weekly.</p>
+            </div>
+          </div>
+          <ul class="clean-list">
+            <li class="clean-item"><strong>Reusable prompts + workflows</strong></li>
+            <li class="clean-item"><strong>Weekly content generation</strong></li>
+            <li class="clean-item"><strong>Repurpose long → short content</strong></li>
+          </ul>
+        </section>
+      </div>
+    </section>
 
     <h3 id="contact" class="section-title">Contact</h3>
     <section class="form">
@@ -967,11 +710,11 @@
         <label for="help">What can I help with?</label>
         <textarea id="help" name="message" placeholder="Example: I'd like to automate customer replies and improve my landing page." required></textarea>
 
-        <!-- Helps prevent spam a bit -->
         <input type="text" name="_gotcha" style="display:none" />
 
         <div class="form-actions">
           <button class="btn primary" type="submit">Send message</button>
+          <a class="btn" href="mailto:hello@shedlabs.studio">Or email hello@shedlabs.studio</a>
         </div>
 
         <div class="note">
