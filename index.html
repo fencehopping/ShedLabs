@@ -13,13 +13,8 @@
 
   <style>
     :root{
-      --bg: #0b1220;
-      --card: rgba(255,255,255,0.06);
-      --card2: rgba(255,255,255,0.08);
       --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.72);
-      --border: rgba(255,255,255,0.14);
-      --shadow: 0 12px 30px rgba(0,0,0,0.35);
+      --muted: rgba(255,255,255,0.68);
       --radius: 18px;
       --max: 1040px;
     }
@@ -29,10 +24,13 @@
       margin:0;
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
       color: var(--text);
-      background: radial-gradient(1200px 800px at 20% 10%, #1b2b55 0%, rgba(27,43,85,0) 55%),
-                  radial-gradient(1000px 700px at 80% 20%, #234a3b 0%, rgba(35,74,59,0) 55%),
-                  linear-gradient(180deg, #050913 0%, #0b1220 35%, #070c16 100%);
       line-height: 1.55;
+
+      /* Cleaner background (reduced banding / weird patterns) */
+      background:
+        radial-gradient(900px 500px at 15% 10%, rgba(99, 102, 241, 0.18), transparent 60%),
+        radial-gradient(900px 500px at 85% 15%, rgba(16, 185, 129, 0.14), transparent 60%),
+        linear-gradient(180deg, #070b14 0%, #0b1220 55%, #070b14 100%);
     }
     a{color:inherit}
     .wrap{
@@ -40,6 +38,8 @@
       margin: 0 auto;
       padding: 28px 20px 70px;
     }
+
+    /* Header */
     .topbar{
       display:flex;
       align-items:center;
@@ -50,22 +50,24 @@
     .brand{
       display:flex;
       align-items:center;
-      gap:12px;
+      gap:16px;
       min-width: 240px;
     }
     .logo{
-  height: 200px;      
-  width: auto;
-  padding: 0;        
-  border: none;      
-  background: none;  
-  object-fit: contain;
-  transition: transform .15s ease;
-}
-
-.logo:hover{
-  transform: translateY(-1px);
-}
+      height: 56px;    /* bigger logo */
+      width: auto;
+      padding: 0;      /* no box */
+      border: none;
+      background: none;
+      object-fit: contain;
+      transition: transform .15s ease, opacity .15s ease;
+      opacity: 0.98;
+      display:block;
+    }
+    .logo:hover{
+      transform: translateY(-1px);
+      opacity: 1;
+    }
     .brand h3{
       margin:0;
       font-size: 16px;
@@ -98,23 +100,17 @@
       border-color: rgba(255,255,255,0.28);
     }
 
+    /* Hero */
     .hero{
-      border: 1px solid rgba(255,255,255,0.14);
-      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.05);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.45);
       padding: 28px;
       overflow:hidden;
       position:relative;
     }
-    .hero::after{
-      content:"";
-      position:absolute;
-      inset:-2px;
-      background: radial-gradient(800px 240px at 20% 0%, rgba(255,255,255,0.12), rgba(255,255,255,0)),
-                  radial-gradient(600px 240px at 80% 20%, rgba(255,255,255,0.08), rgba(255,255,255,0));
-      pointer-events:none;
-    }
+    /* Removed hero overlay that caused visual “pattern” */
     .hero-grid{
       display:grid;
       grid-template-columns: 1.2fr 0.8fr;
@@ -195,9 +191,10 @@
       color: rgba(255,255,255,0.65);
     }
 
+    /* Cards */
     .sidecard{
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.035);
       border-radius: var(--radius);
       padding: 18px;
     }
@@ -218,6 +215,7 @@
       font-size: 13.5px;
     }
     .list li{margin: 8px 0;}
+
     .grid{
       display:grid;
       grid-template-columns: repeat(12, 1fr);
@@ -226,14 +224,10 @@
     }
     .card{
       grid-column: span 6;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.035);
       border-radius: var(--radius);
       padding: 18px;
-    }
-    .card h2{
-      margin: 0 0 8px;
-      font-size: 18px;
     }
     .card p{
       margin: 0 0 12px;
@@ -257,9 +251,37 @@
       letter-spacing: 0.2px;
     }
 
-    .form{
+    /* Icon headers */
+    .section-head{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      margin-bottom: 8px;
+    }
+    .icon{
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.14);
       background: rgba(255,255,255,0.04);
+      display:grid;
+      place-items:center;
+      flex: 0 0 auto;
+    }
+    .icon svg{
+      width: 18px;
+      height: 18px;
+      opacity: 0.9;
+    }
+    .card h2{
+      margin:0;
+      font-size: 18px;
+    }
+
+    /* Form */
+    .form{
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.035);
       border-radius: var(--radius);
       padding: 18px;
       box-shadow: 0 10px 24px rgba(0,0,0,0.22);
@@ -308,6 +330,11 @@
       color: rgba(255,255,255,0.55);
       font-size: 12.5px;
     }
+
+    /* Small-screen logo tweak */
+    @media (max-width: 520px){
+      .logo{height: 44px;}
+    }
   </style>
 </head>
 
@@ -316,14 +343,9 @@
 
     <div class="topbar">
       <div class="brand">
-        <!-- Replace this with an <img> later if you want -->
         <a href="/" aria-label="Shed Design Labs home">
-  <img
-    src="logo.svg"
-    alt="Shed Design Labs logo"
-    class="logo"
-  />
-</a>
+          <img src="logo.svg" alt="Shed Design Labs logo" class="logo" />
+        </a>
         <div>
           <h3>Shed Design Labs</h3>
           <p>AI • Product Design • Marketing Support</p>
@@ -373,7 +395,16 @@
 
     <div class="grid">
       <section id="ai" class="card">
-        <h2>AI & Automation</h2>
+        <div class="section-head">
+          <div class="icon" aria-hidden="true">
+            <!-- Placeholder icon (spark) -->
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M12 2l1.2 5.2L18 9l-4.8 1.8L12 16l-1.2-5.2L6 9l4.8-1.8L12 2z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+              <path d="M19 14l.7 3 2.3.9-2.3.9L19 22l-.7-3-2.3-.9 2.3-.9.7-3z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <h2>AI & Automation</h2>
+        </div>
         <p>Hands-on help to save time and reduce repetitive work — set up once, reuse forever.</p>
         <ul>
           <li>ChatGPT training tailored to your business (emails, customer replies, content, planning)</li>
@@ -383,7 +414,17 @@
       </section>
 
       <section id="design" class="card">
-        <h2>Product, App & Web Design</h2>
+        <div class="section-head">
+          <div class="icon" aria-hidden="true">
+            <!-- Placeholder icon (layout) -->
+            <svg viewBox="0 0 24 24" fill="none">
+              <path d="M4 5h16v14H4V5z" stroke="white" stroke-width="1.6" />
+              <path d="M4 9h16" stroke="white" stroke-width="1.6" />
+              <path d="M9 9v10" stroke="white" stroke-width="1.6" />
+            </svg>
+          </div>
+          <h2>Product, App & Web Design</h2>
+        </div>
         <p>Make your product feel clearer, faster, and more trustworthy — with a practical design process.</p>
         <ul>
           <li>App and web UX/UI design (new builds or refreshes)</li>
@@ -401,23 +442,51 @@
         </p>
         <div class="grid" style="margin-top: 0;">
           <div class="card" style="grid-column: span 4;">
-            <h2 style="font-size:16px;">Messaging & Content</h2>
+            <div class="section-head">
+              <div class="icon" aria-hidden="true">
+                <!-- Placeholder icon (chat) -->
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M5 6h14v9H8l-3 3V6z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h2 style="font-size:16px;">Messaging & Content</h2>
+            </div>
             <ul>
               <li>Positioning and value props</li>
               <li>Landing page copy direction</li>
               <li>Content planning + templates</li>
             </ul>
           </div>
+
           <div class="card" style="grid-column: span 4;">
-            <h2 style="font-size:16px;">Campaign Setup</h2>
+            <div class="section-head">
+              <div class="icon" aria-hidden="true">
+                <!-- Placeholder icon (target) -->
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18z" stroke="white" stroke-width="1.6"/>
+                  <path d="M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" stroke="white" stroke-width="1.6"/>
+                  <path d="M12 12h6" stroke="white" stroke-width="1.6"/>
+                </svg>
+              </div>
+              <h2 style="font-size:16px;">Campaign Setup</h2>
+            </div>
             <ul>
               <li>Creative + targeting guidance</li>
               <li>Ad variations & testing plans</li>
               <li>Simple reporting dashboards</li>
             </ul>
           </div>
+
           <div class="card" style="grid-column: span 4;">
-            <h2 style="font-size:16px;">AI for Marketing Ops</h2>
+            <div class="section-head">
+              <div class="icon" aria-hidden="true">
+                <!-- Placeholder icon (bolt) -->
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path d="M13 2L4 14h7l-1 8 10-14h-7l0-6z" stroke="white" stroke-width="1.6" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h2 style="font-size:16px;">AI for Marketing Ops</h2>
+            </div>
             <ul>
               <li>Reusable prompts + workflows</li>
               <li>Weekly content generation</li>
@@ -434,7 +503,6 @@
         Send a note and I’ll get back to you. Include what you do + what you’d like to improve.
       </p>
 
-      
       <form action="https://formspree.io/f/mkogkjew" method="POST">
         <div class="form-row">
           <div>
