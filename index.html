@@ -2,91 +2,472 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Practical AI, Design & Marketing Help</title>
+  <title>Shed Design Labs — AI, Product Design & Marketing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Hands-on AI training, product design, app & web design, and marketing support for small businesses." />
+  <meta name="description" content="Hands-on AI training, automation, app & web design, and marketing support for small businesses." />
+
+  <!-- Basic social sharing -->
+  <meta property="og:title" content="Shed Design Labs" />
+  <meta property="og:description" content="Hands-on AI, product design, and marketing help for small businesses." />
+  <meta property="og:type" content="website" />
+
   <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #fafafa;
-      color: #111;
-      line-height: 1.6;
+    :root{
+      --bg: #0b1220;
+      --card: rgba(255,255,255,0.06);
+      --card2: rgba(255,255,255,0.08);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.72);
+      --border: rgba(255,255,255,0.14);
+      --shadow: 0 12px 30px rgba(0,0,0,0.35);
+      --radius: 18px;
+      --max: 1040px;
     }
-    main {
-      max-width: 760px;
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 20% 10%, #1b2b55 0%, rgba(27,43,85,0) 55%),
+                  radial-gradient(1000px 700px at 80% 20%, #234a3b 0%, rgba(35,74,59,0) 55%),
+                  linear-gradient(180deg, #050913 0%, #0b1220 35%, #070c16 100%);
+      line-height: 1.55;
+    }
+    a{color:inherit}
+    .wrap{
+      max-width: var(--max);
       margin: 0 auto;
-      padding: 64px 24px;
+      padding: 28px 20px 70px;
     }
-    h1 {
-      font-size: 2.2rem;
-      margin-bottom: 0.5em;
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      padding: 10px 0 26px;
     }
-    h2 {
-      margin-top: 2em;
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      min-width: 240px;
     }
-    p {
-      margin: 1em 0;
+    .logo{
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display:grid;
+      place-items:center;
+      border: 1px dashed rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.75);
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      user-select:none;
     }
-    ul {
-      padding-left: 1.2em;
+    .brand h3{
+      margin:0;
+      font-size: 16px;
+      letter-spacing: 0.2px;
     }
-    li {
-      margin: 0.5em 0;
+    .brand p{
+      margin:2px 0 0;
+      font-size: 12.5px;
+      color: var(--muted);
     }
-    .cta {
-      margin-top: 2.5em;
-      padding: 1.25em;
-      background: #111;
-      color: #fff;
-      border-radius: 8px;
+    .nav{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
     }
-    .cta a {
-      color: #fff;
-      font-weight: 600;
-      text-decoration: underline;
+    .chip{
+      text-decoration:none;
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.04);
+      padding: 8px 12px;
+      border-radius: 999px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .chip:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.28);
+    }
+
+    .hero{
+      border: 1px solid rgba(255,255,255,0.14);
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      overflow:hidden;
+      position:relative;
+    }
+    .hero::after{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background: radial-gradient(800px 240px at 20% 0%, rgba(255,255,255,0.12), rgba(255,255,255,0)),
+                  radial-gradient(600px 240px at 80% 20%, rgba(255,255,255,0.08), rgba(255,255,255,0));
+      pointer-events:none;
+    }
+    .hero-grid{
+      display:grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      position:relative;
+    }
+    @media (max-width: 860px){
+      .hero-grid{grid-template-columns: 1fr;}
+      .nav{justify-content:flex-start}
+    }
+    .badge{
+      display:inline-flex;
+      gap:8px;
+      align-items:center;
+      font-size: 13px;
+      color: rgba(255,255,255,0.78);
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.05);
+      padding: 7px 12px;
+      border-radius: 999px;
+      width: fit-content;
+    }
+    .dot{
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.8);
+      opacity: .7;
+    }
+    h1{
+      margin: 14px 0 10px;
+      font-size: clamp(32px, 4vw, 48px);
+      letter-spacing: -0.6px;
+      line-height: 1.1;
+    }
+    .sub{
+      margin: 0 0 18px;
+      color: var(--muted);
+      font-size: 16.5px;
+      max-width: 62ch;
+    }
+    .cta-row{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top: 16px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      text-decoration:none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.92);
+      font-weight: 650;
+      font-size: 14px;
+      transition: transform .15s ease, background .15s ease, border-color .15s ease;
+    }
+    .btn:hover{
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.09);
+      border-color: rgba(255,255,255,0.28);
+    }
+    .btn.primary{
+      background: rgba(255,255,255,0.16);
+      border-color: rgba(255,255,255,0.28);
+    }
+    .btn.primary:hover{
+      background: rgba(255,255,255,0.2);
+    }
+    .mini{
+      margin-top: 12px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.65);
+    }
+
+    .sidecard{
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .sidecard h3{
+      margin: 0 0 8px;
+      font-size: 15px;
+      letter-spacing: 0.2px;
+    }
+    .sidecard p{
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13.5px;
+    }
+    .list{
+      margin: 0;
+      padding-left: 18px;
+      color: rgba(255,255,255,0.86);
+      font-size: 13.5px;
+    }
+    .list li{margin: 8px 0;}
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+      margin-top: 18px;
+    }
+    .card{
+      grid-column: span 6;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius);
+      padding: 18px;
+    }
+    .card h2{
+      margin: 0 0 8px;
+      font-size: 18px;
+    }
+    .card p{
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .card ul{
+      margin: 0;
+      padding-left: 18px;
+      color: rgba(255,255,255,0.86);
+    }
+    .card li{margin: 8px 0;}
+    @media (max-width: 860px){
+      .card{grid-column: span 12;}
+    }
+
+    .section-title{
+      margin: 36px 0 12px;
+      font-size: 18px;
+      color: rgba(255,255,255,0.88);
+      letter-spacing: 0.2px;
+    }
+
+    .form{
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.04);
+      border-radius: var(--radius);
+      padding: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
+    }
+    label{
+      display:block;
+      font-size: 13px;
+      color: rgba(255,255,255,0.85);
+      margin: 12px 0 6px;
+    }
+    input, textarea{
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.03);
+      color: rgba(255,255,255,0.92);
+      padding: 12px 12px;
+      font-size: 14px;
+      outline:none;
+    }
+    input:focus, textarea:focus{
+      border-color: rgba(255,255,255,0.32);
+      background: rgba(255,255,255,0.05);
+    }
+    textarea{min-height: 120px; resize: vertical;}
+    .form-row{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    @media (max-width: 860px){ .form-row{grid-template-columns: 1fr;} }
+    .form-actions{
+      display:flex;
+      gap: 12px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-top: 14px;
+    }
+    .note{
+      font-size: 12.5px;
+      color: rgba(255,255,255,0.65);
+      margin-top: 10px;
+    }
+    footer{
+      margin-top: 42px;
+      color: rgba(255,255,255,0.55);
+      font-size: 12.5px;
     }
   </style>
 </head>
+
 <body>
-  <main>
-    <h1>Practical AI, Product Design & Marketing Help</h1>
+  <div class="wrap">
 
-    <p>
-      I help small businesses and individuals use technology in practical, human ways —
-      without buzzwords or overwhelm.
-    </p>
+    <div class="topbar">
+      <div class="brand">
+        <!-- Replace this with an <img> later if you want -->
+        <div class="logo" aria-label="Logo placeholder">LOGO</div>
+        <div>
+          <h3>Shed Design Labs</h3>
+          <p>AI • Product Design • Marketing Support</p>
+        </div>
+      </div>
 
-    <h2>AI & Automation</h2>
-    <ul>
-      <li>Hands-on ChatGPT training using your real work</li>
-      <li>Automating repetitive tasks (emails, summaries, content, admin)</li>
-      <li>Building simple custom tools with AI — no technical background needed</li>
-    </ul>
-
-    <h2>Product, App & Web Design</h2>
-    <ul>
-      <li>Website and mobile app design</li>
-      <li>Improving user experience and workflows</li>
-      <li>Turning ideas into simple, usable products</li>
-    </ul>
-
-    <h2>Marketing & Advertising Support</h2>
-    <ul>
-      <li>Messaging and content creation</li>
-      <li>Campaign planning and setup</li>
-      <li>Using AI to streamline marketing workflows</li>
-    </ul>
-
-    <div class="cta">
-      <p>
-        Curious if this could help your business?
-        <br />
-        Email me at <a href="mailto:you@yourdomain.com">you@yourdomain.com</a>
-        or reach out on Nextdoor.
-      </p>
+      <nav class="nav" aria-label="Primary">
+        <a class="chip" href="#ai">AI & Automation</a>
+        <a class="chip" href="#design">Design</a>
+        <a class="chip" href="#marketing">Marketing</a>
+        <a class="chip" href="#contact">Contact</a>
+      </nav>
     </div>
-  </main>
+
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="badge"><span class="dot"></span> Practical help for local businesses</div>
+          <h1>Make AI useful. Make your product feel premium. Ship faster.</h1>
+          <p class="sub">
+            Hands-on support for small businesses who want real results — from learning ChatGPT and automating busywork,
+            to designing websites/apps and improving marketing campaigns. Plain English, collaborative, and tailored to your workflow.
+          </p>
+
+          <div class="cta-row">
+            <a class="btn primary" href="#contact">Request a consult</a>
+            <a class="btn" href="mailto:hello@shedlabs.studio">Email: hello@shedlabs.studio</a>
+          </div>
+
+          <p class="mini">
+            Typical first step: a quick call to understand what you do today, what’s annoying, and what we can simplify in a week.
+          </p>
+        </div>
+
+        <aside class="sidecard">
+          <h3>What I can help with quickly</h3>
+          <p>Great for busy owners who want momentum without a big project.</p>
+          <ul class="list">
+            <li>Turn “AI curiosity” into repeatable workflows</li>
+            <li>Automate admin + content tasks</li>
+            <li>Design or refresh a site/app experience</li>
+            <li>Improve campaign messaging & execution</li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section id="ai" class="card">
+        <h2>AI & Automation</h2>
+        <p>Hands-on help to save time and reduce repetitive work — set up once, reuse forever.</p>
+        <ul>
+          <li>ChatGPT training tailored to your business (emails, customer replies, content, planning)</li>
+          <li>Automation for busywork (summaries, templates, proposals, internal docs)</li>
+          <li>Simple custom tools using AI (no coding background needed)</li>
+        </ul>
+      </section>
+
+      <section id="design" class="card">
+        <h2>Product, App & Web Design</h2>
+        <p>Make your product feel clearer, faster, and more trustworthy — with a practical design process.</p>
+        <ul>
+          <li>App and web UX/UI design (new builds or refreshes)</li>
+          <li>Workflow and usability improvements</li>
+          <li>Design systems and reusable components</li>
+        </ul>
+      </section>
+    </div>
+
+    <h3 id="marketing" class="section-title">Marketing & Advertising Support</h3>
+    <div class="grid" style="margin-top: 12px;">
+      <section class="card" style="grid-column: span 12;">
+        <p style="margin:0 0 12px; color: rgba(255,255,255,0.74);">
+          Help with messaging, creative direction, and campaign execution — plus AI workflows to keep things moving.
+        </p>
+        <div class="grid" style="margin-top: 0;">
+          <div class="card" style="grid-column: span 4;">
+            <h2 style="font-size:16px;">Messaging & Content</h2>
+            <ul>
+              <li>Positioning and value props</li>
+              <li>Landing page copy direction</li>
+              <li>Content planning + templates</li>
+            </ul>
+          </div>
+          <div class="card" style="grid-column: span 4;">
+            <h2 style="font-size:16px;">Campaign Setup</h2>
+            <ul>
+              <li>Creative + targeting guidance</li>
+              <li>Ad variations & testing plans</li>
+              <li>Simple reporting dashboards</li>
+            </ul>
+          </div>
+          <div class="card" style="grid-column: span 4;">
+            <h2 style="font-size:16px;">AI for Marketing Ops</h2>
+            <ul>
+              <li>Reusable prompts + workflows</li>
+              <li>Weekly content generation</li>
+              <li>Repurpose long → short content</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <h3 id="contact" class="section-title">Contact</h3>
+    <section class="form">
+      <p style="margin:0 0 8px; color: rgba(255,255,255,0.74);">
+        Send a note and I’ll get back to you. Include what you do + what you’d like to improve.
+      </p>
+
+      
+      <form action="https://formspree.io/f/mkogkjew" method="POST">
+        <div class="form-row">
+          <div>
+            <label for="name">Name</label>
+            <input id="name" name="name" placeholder="Your name" required />
+          </div>
+          <div>
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@company.com" required />
+          </div>
+        </div>
+
+        <label for="company">Business / Org (optional)</label>
+        <input id="company" name="company" placeholder="Company name" />
+
+        <label for="help">What can I help with?</label>
+        <textarea id="help" name="message" placeholder="Example: I'd like to automate customer replies and improve my landing page." required></textarea>
+
+        <!-- Helps prevent spam a bit -->
+        <input type="text" name="_gotcha" style="display:none" />
+
+        <div class="form-actions">
+          <button class="btn primary" type="submit">Send message</button>
+          <a class="btn" href="mailto:hello@shedlabs.studio">Or email hello@shedlabs.studio</a>
+        </div>
+
+        <div class="note">
+          Prefer a quick call? Mention your availability and I’ll send a calendar link.
+        </div>
+      </form>
+    </section>
+
+    <footer>
+      © <span id="y"></span> Shed Design Labs • Built with GitHub Pages
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>
