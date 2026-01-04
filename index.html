@@ -54,18 +54,20 @@
       min-width: 240px;
     }
     .logo{
-      width: 42px;
-      height: 42px;
-      border-radius: 12px;
-      display:grid;
-      place-items:center;
-      border: 1px dashed rgba(255,255,255,0.35);
-      background: rgba(255,255,255,0.03);
-      color: rgba(255,255,255,0.75);
-      font-weight: 700;
-      letter-spacing: 0.5px;
-      user-select:none;
-    }
+  height: 42px;
+  width: auto;
+  padding: 6px 10px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.18);
+  object-fit: contain;
+  transition: transform .15s ease, background .15s ease;
+}
+
+.logo:hover{
+  transform: translateY(-1px);
+  background: rgba(255,255,255,0.07);
+}
     .brand h3{
       margin:0;
       font-size: 16px;
@@ -317,7 +319,13 @@
     <div class="topbar">
       <div class="brand">
         <!-- Replace this with an <img> later if you want -->
-        <div class="logo" aria-label="Logo placeholder">LOGO</div>
+        <a href="/" aria-label="Shed Design Labs home">
+  <img
+    src="logo.svg"
+    alt="Shed Design Labs logo"
+    class="logo"
+  />
+</a>
         <div>
           <h3>Shed Design Labs</h3>
           <p>AI • Product Design • Marketing Support</p>
