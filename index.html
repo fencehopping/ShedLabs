@@ -311,6 +311,20 @@
     }
     .list li{margin: 8px 0;}
 
+    .hero-media{
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.02);
+      margin-bottom: 14px;
+      box-shadow: 0 14px 28px rgba(0,0,0,0.28);
+    }
+    .hero-media img{
+      display:block;
+      width:100%;
+      height:auto;
+    }
+
     /* --------- SERVICES (this is the grid you want) --------- */
     .services{
       margin-top: 26px;
@@ -431,6 +445,42 @@
       letter-spacing: 0.2px;
     }
 
+    /* Work examples */
+    .image-grid{
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+    .image-card{
+      grid-column: span 4;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .image-card img{
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+    .image-card figcaption{
+      padding: 12px 14px 14px;
+      font-size: 13.5px;
+      color: rgba(255,255,255,0.78);
+      line-height: 1.4;
+    }
+    .image-card strong{
+      display:block;
+      color: rgba(255,255,255,0.92);
+      margin-bottom: 4px;
+      font-size: 14px;
+    }
+    @media (max-width: 900px){
+      .image-card{ grid-column: span 12; }
+      .image-card img{ height: 220px; }
+    }
+
     /* Form */
     .form{
       border: 1px solid var(--border);
@@ -515,30 +565,33 @@
     <section class="hero">
       <div class="hero-grid">
         <div>
-          <div class="badge"><span class="dot"></span> Practical help for local businesses</div>
-          <h1>Make AI useful. Make your product feel premium. Ship faster.</h1>
+          <div class="badge"><span class="dot"></span> Built for South Shore owners who want momentum</div>
+          <h1>South Shore AI, Website Design, and Marketing that helps you book more local jobs.</h1>
           <p class="sub">
-            Hands-on support for small businesses who want real results — from learning ChatGPT and automating busywork,
-            to designing websites/apps and improving marketing campaigns. Plain English, collaborative, and tailored to your workflow.
+            We help service businesses in Hanover, Marshfield, Scituate, Cohasset, Duxbury, and Norwell run smoother,
+            look more credible, and turn more website visits into estimate requests.
           </p>
 
           <div class="cta-row">
-            <a class="btn primary" href="#contact">Contact Us</a>
+            <a class="btn primary" href="#contact">Book a South Shore Growth Call</a>
           </div>
 
           <p class="mini">
-            Typical first step: a quick call to understand what you do today, what’s annoying, and what we can simplify in a week.
+            First step: a quick local growth call to map your workflow and identify the fastest win.
           </p>
         </div>
 
         <aside class="sidecard">
-          <h3>What I can help with quickly</h3>
-          <p>Great for busy owners who want momentum without a big project.</p>
+          <div class="hero-media">
+            <img src="shed.png" alt="Workshop exterior with finished project" />
+          </div>
+          <h3>Fast wins for South Shore teams</h3>
+          <p>Clear outcomes in 1-2 weeks.</p>
           <ul class="list">
-            <li>Turn “AI curiosity” into repeatable workflows</li>
-            <li>Automate admin + content tasks</li>
-            <li>Design or refresh a site/app experience</li>
-            <li>Improve campaign messaging & execution</li>
+            <li>Local SEO copy updates that improve town-based searches</li>
+            <li>Automation for estimates, follow-ups, and lead routing</li>
+            <li>Photo-first pages that showcase real jobs and reviews</li>
+            <li>Simple ad + tracking setup so you know what drives calls</li>
           </ul>
         </aside>
       </div>
@@ -547,10 +600,11 @@
     <!-- ✅ Services Grid (THIS replaces your old “grid/card” section) -->
     <section class="services" id="services">
       <div class="services-head">
-        <div class="services-kicker">Services</div>
-        <h2 class="services-title">Practical help that ships</h2>
+        <div class="services-kicker">South Shore Services</div>
+        <h2 class="services-title">AI, Website & Marketing Support for South Shore Businesses</h2>
         <p class="services-lede">
-          Pick a quick win or a bigger engagement — either way, the goal is momentum: save time, ship faster, and look more premium.
+          Built for owners in Hanover, Marshfield, Scituate, Cohasset, Duxbury, and Norwell who want more calls,
+          faster follow-up, and a brand that looks as good as their work.
         </p>
       </div>
 
@@ -565,23 +619,23 @@
               </svg>
             </div>
             <div>
-              <h3 class="card-title">AI & Automation</h3>
-              <p class="card-sub">Set up once, reuse forever.</p>
+              <h3 class="card-title">AI & Automation for Local Service Teams</h3>
+              <p class="card-sub">Less office time, more paid work in the field.</p>
             </div>
           </div>
 
           <ul class="clean-list">
             <li class="clean-item">
-              <strong>ChatGPT training tailored to your business</strong>
-              <span>Emails, customer replies, content, planning, internal docs.</span>
+              <strong>Turn missed inquiries into booked estimates.</strong>
+              <span>Example: a Marshfield contractor gets automatic text/email follow-ups within minutes, not next day.</span>
             </li>
             <li class="clean-item">
-              <strong>Automation for busywork</strong>
-              <span>Summaries, templates, proposals, repeatable weekly workflows.</span>
+              <strong>Speed up quotes without sounding robotic.</strong>
+              <span>Example: a Hanover home-service team uses ready-to-send estimate drafts and saves hours each week.</span>
             </li>
             <li class="clean-item">
-              <strong>Simple custom tools using AI</strong>
-              <span>No coding background needed — we keep it practical.</span>
+              <strong>Keep every lead organized from first call to signed job.</strong>
+              <span>Example: a Norwell owner sees one clear pipeline instead of sticky notes and inbox chaos.</span>
             </li>
           </ul>
         </section>
@@ -597,32 +651,61 @@
               </svg>
             </div>
             <div>
-              <h3 class="card-title">Product, App & Web Design</h3>
-              <p class="card-sub">Clarity, speed, and trust.</p>
+              <h3 class="card-title">South Shore Website Design That Books More Calls</h3>
+              <p class="card-sub">Show local proof, build trust fast, and convert traffic.</p>
             </div>
           </div>
 
           <ul class="clean-list">
             <li class="clean-item">
-              <strong>UX/UI design (new builds or refreshes)</strong>
-              <span>From wireframes to polished UI — shipped-ready.</span>
+              <strong>Make your work look high-end on first click.</strong>
+              <span>Example: a Scituate remodeler swaps stock photos for real projects and sees better lead quality.</span>
             </li>
             <li class="clean-item">
-              <strong>Workflow & usability improvements</strong>
-              <span>Reduce steps, remove confusion, increase conversion.</span>
+              <strong>Guide visitors to one clear next step.</strong>
+              <span>Example: a Duxbury service business adds clearer "Request Estimate" paths and gets more form fills.</span>
             </li>
             <li class="clean-item">
-              <strong>Design systems & reusable components</strong>
-              <span>Consistent UI, faster iteration, fewer one-offs.</span>
+              <strong>Write copy that sounds like your team, not a template.</strong>
+              <span>Example: a Cohasset brand refresh highlights neighborhoods served and closes more local calls.</span>
             </li>
           </ul>
         </section>
       </div>
 
       <!-- Marketing -->
-      <h3 id="marketing" class="section-title">Marketing & Advertising Support</h3>
+      <h3 class="section-title">Work examples</h3>
       <p style="margin:0 0 12px; color: rgba(255,255,255,0.70); max-width: 72ch;">
-        Help with messaging, creative direction, and campaign execution — plus AI workflows to keep things moving.
+        Real visuals and deliverables — the kind of assets that make a business feel credible at first glance.
+      </p>
+
+      <div class="image-grid">
+        <figure class="image-card">
+          <img src="bg.png" alt="Exterior build photo used in a landing page hero" />
+          <figcaption>
+            <strong>Photo‑first landing page</strong>
+            Replace stock imagery with real builds, then pair with short, confident copy.
+          </figcaption>
+        </figure>
+        <figure class="image-card">
+          <img src="bg2.png" alt="Interior detail shot for service credibility" />
+          <figcaption>
+            <strong>Service proof gallery</strong>
+            A fast, scrollable set of before/after or detail shots that sells quality.
+          </figcaption>
+        </figure>
+        <figure class="image-card">
+          <img src="Textsvg.png" alt="Branded graphic asset for campaigns" />
+          <figcaption>
+            <strong>Branded ad creative</strong>
+            Simple, consistent visuals for social and local ads that don’t look homemade.
+          </figcaption>
+        </figure>
+      </div>
+
+      <h3 id="marketing" class="section-title">Local Marketing Support for Hanover to Duxbury</h3>
+      <p style="margin:0 0 12px; color: rgba(255,255,255,0.70); max-width: 72ch;">
+        Practical campaigns for South Shore, MA: clearer messaging, better creative, and simple reporting so you know what is actually driving calls.
       </p>
 
       <div class="cards-3">
@@ -634,14 +717,13 @@
               </svg>
             </div>
             <div>
-              <h3 class="card-title" style="font-size:16px;">Messaging & Content</h3>
-              <p class="card-sub">Clarity that converts.</p>
+              <h3 class="card-title" style="font-size:16px;">Messaging & Local SEO Copy</h3>
+              <p class="card-sub">Get found and understood quickly.</p>
             </div>
           </div>
           <ul class="clean-list">
-            <li class="clean-item"><strong>Positioning and value props</strong></li>
-            <li class="clean-item"><strong>Landing page copy direction</strong></li>
-            <li class="clean-item"><strong>Content planning + templates</strong></li>
+            <li class="clean-item"><strong>Town-specific service copy</strong><span>Rank better for searches like "deck builder Hanover MA" and "kitchen remodel Norwell."</span></li>
+            <li class="clean-item"><strong>Clear value statements</strong><span>Help homeowners understand why they should call you first.</span></li>
           </ul>
         </section>
 
@@ -655,14 +737,13 @@
               </svg>
             </div>
             <div>
-              <h3 class="card-title" style="font-size:16px;">Campaign Setup</h3>
-              <p class="card-sub">Simple tests, real signals.</p>
+              <h3 class="card-title" style="font-size:16px;">Campaign Setup & Testing</h3>
+              <p class="card-sub">Spend smarter, not wider.</p>
             </div>
           </div>
           <ul class="clean-list">
-            <li class="clean-item"><strong>Creative + targeting guidance</strong></li>
-            <li class="clean-item"><strong>Ad variations & testing plans</strong></li>
-            <li class="clean-item"><strong>Simple reporting dashboards</strong></li>
+            <li class="clean-item"><strong>Geo-focused ad targeting</strong><span>Prioritize Hanover, Marshfield, Scituate, Cohasset, Duxbury, and Norwell first.</span></li>
+            <li class="clean-item"><strong>Simple weekly testing</strong><span>Keep what brings calls; cut what does not.</span></li>
           </ul>
         </section>
 
@@ -674,23 +755,30 @@
               </svg>
             </div>
             <div>
-              <h3 class="card-title" style="font-size:16px;">AI for Marketing Ops</h3>
-              <p class="card-sub">Keep it moving weekly.</p>
+              <h3 class="card-title" style="font-size:16px;">Reporting Owners Actually Use</h3>
+              <p class="card-sub">No jargon, just signal.</p>
             </div>
           </div>
           <ul class="clean-list">
-            <li class="clean-item"><strong>Reusable prompts + workflows</strong></li>
-            <li class="clean-item"><strong>Weekly content generation</strong></li>
-            <li class="clean-item"><strong>Repurpose long → short content</strong></li>
+            <li class="clean-item"><strong>Lead-source visibility</strong><span>See which channel drove each call or form.</span></li>
+            <li class="clean-item"><strong>Clear monthly takeaways</strong><span>Know what to do next without digging through dashboards.</span></li>
           </ul>
         </section>
       </div>
+
+      <div class="cta-row" style="margin-top:20px;">
+        <a class="btn primary" href="#contact">Book a South Shore Growth Call</a>
+        <a class="btn" href="#contact">Get a Free Website + Lead Flow Audit</a>
+      </div>
+      <p class="mini">
+        We'll review your current site, follow-up process, and local visibility, then give you a clear 30-day action plan.
+      </p>
     </section>
 
     <h3 id="contact" class="section-title">Contact</h3>
     <section class="form">
       <p style="margin:0 0 8px; color: rgba(255,255,255,0.74);">
-        Send a note and I’ll get back to you. Include what you do + what you’d like to improve.
+        Send a quick note and I’ll reply with next steps. Include what you do and what you want to improve.
       </p>
 
       <form action="https://formspree.io/f/mkogkjew" method="POST">
@@ -709,7 +797,7 @@
         <input id="company" name="company" placeholder="Company name" />
 
         <label for="help">What can I help with?</label>
-        <textarea id="help" name="message" placeholder="Example: I'd like to automate customer replies and improve my landing page." required></textarea>
+        <textarea id="help" name="message" placeholder="Example: I want a stronger landing page and better follow‑up automation." required></textarea>
 
         <input type="text" name="_gotcha" style="display:none" />
 
