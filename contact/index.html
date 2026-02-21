@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Contact | Shed Design Labs</title>
+  <meta name="description" content="Book a free 30-minute strategy call with Shed Design Labs to plan website, app, or AI training and automation support." />
+  <meta property="og:title" content="Contact | Shed Design Labs" />
+  <meta property="og:description" content="Share your goals and get a practical plan for website, app, or AI implementation." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <div class="wrap">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Shed Design Labs home">
+        <img src="/logo.svg" alt="Shed Design Labs logo" class="logo" />
+        <span class="brand-copy">
+          <strong>Shed Design Labs</strong>
+          <span>Product design, development, and AI support</span>
+        </span>
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-link" href="/services">Services</a>
+        <a class="nav-link" href="/ai-training">AI Training</a>
+        <a class="nav-link" href="/work">Work</a>
+        <a class="nav-link" href="/about">About</a>
+        <a class="nav-link" href="/contact" aria-current="page">Contact</a>
+        <a class="btn btn-primary" href="/contact#book-call">Book a free 30-min strategy call</a>
+      </nav>
+    </header>
+
+    <main id="content">
+      <section class="hero" aria-labelledby="contact-heading">
+        <h1 id="contact-heading">Contact</h1>
+        <p class="lead">Tell me what you need help with and I’ll recommend the fastest path. Most projects begin with a free 30-minute strategy call.</p>
+      </section>
+
+      <section class="panel" id="book-call" aria-labelledby="book-heading">
+        <h2 class="section-title" id="book-heading">Book a free 30-min strategy call</h2>
+        <p class="section-copy">Share a few details below and I’ll reply with next steps.</p>
+
+        <form action="https://formspree.io/f/mkogkjew" method="POST">
+          <div class="form-row">
+            <div>
+              <label for="name">Name</label>
+              <input id="name" name="name" placeholder="Your name" required />
+            </div>
+            <div>
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" placeholder="you@company.com" required />
+            </div>
+          </div>
+
+          <label for="company">Business / Organization (optional)</label>
+          <input id="company" name="company" placeholder="Business name" />
+
+          <label for="help">What do you need help with?</label>
+          <textarea id="help" name="message" placeholder="Example: Website redesign + local SEO setup, or private AI training for my team." required></textarea>
+
+          <input type="text" name="_gotcha" style="display:none" />
+
+          <div class="btn-row" style="margin-top:14px;">
+            <button type="submit" class="btn btn-primary">Send request</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <footer>
+      © <span id="y"></span> Shed Design Labs
+    </footer>
+  </div>
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>

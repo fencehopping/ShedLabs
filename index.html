@@ -1,19 +1,16 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <link rel="icon" href="/favicon.png">
-  <link rel="apple-touch-icon" href="/favicon.png">
   <meta charset="utf-8" />
-  <title>Shed Design Labs — AI, Product Design & Marketing</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="Hands-on AI training, automation, app & web design, and marketing support for small businesses." />
-
-  <!-- Basic social sharing -->
-  <meta property="og:title" content="Shed Design Labs" />
-  <meta property="og:description" content="Hands-on AI, product design, and marketing help for small businesses." />
+  <title>Shed Design Labs | Design. Build. Automate.</title>
+  <meta name="description" content="Shed Design Labs helps South Shore businesses ship better websites and apps, plus practical AI training and automations." />
+  <meta property="og:title" content="Shed Design Labs | Design. Build. Automate." />
+  <meta property="og:description" content="Local product-level design, development, and AI support for South Shore businesses." />
   <meta property="og:type" content="website" />
-
-  <!-- Google tag (gtag.js) -->
+  <link rel="icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="stylesheet" href="/styles.css" />
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-QJW7XGQ5T8"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
@@ -21,799 +18,172 @@
     gtag('js', new Date());
     gtag('config', 'G-QJW7XGQ5T8');
   </script>
-
-  <style>
-    :root{
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.68);
-      --radius: 18px;
-      --max: 1040px;
-      --border: rgba(255,255,255,0.12);
-      --surface: rgba(255,255,255,0.045);
-      --surface2: rgba(255,255,255,0.03);
-    }
-
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      color: var(--text);
-      line-height: 1.55;
-
-      background: linear-gradient(180deg, #070b14 0%, #0a1224 45%, #070b14 100%);
-      position: relative;
-      overflow-x: hidden;
-    }
-
-    /* Subtle glow */
-    body::after{
-      content:"";
-      position: fixed;
-      inset: -20%;
-      pointer-events:none;
-      background:
-        radial-gradient(700px 420px at 18% 12%, rgba(99,102,241,0.14), transparent 55%),
-        radial-gradient(700px 420px at 82% 16%, rgba(16,185,129,0.10), transparent 58%);
-      filter: blur(6px);
-      opacity: 0.9;
-      z-index: 0;
-      transform: translateZ(0);
-    }
-
-    /* Noise overlay to reduce banding */
-    body::before{
-      content:"";
-      position: fixed;
-      inset: 0;
-      pointer-events:none;
-      z-index: 0;
-      opacity: 0.06;
-      background-image:
-        repeating-linear-gradient(0deg,
-          rgba(255,255,255,0.02) 0px,
-          rgba(255,255,255,0.02) 1px,
-          rgba(0,0,0,0.02) 2px,
-          rgba(0,0,0,0.02) 3px
-        ),
-        repeating-linear-gradient(90deg,
-          rgba(255,255,255,0.015) 0px,
-          rgba(255,255,255,0.015) 1px,
-          rgba(0,0,0,0.015) 2px,
-          rgba(0,0,0,0.015) 3px
-        );
-      mix-blend-mode: overlay;
-      transform: translateZ(0);
-    }
-
-    /* Keep content above overlays */
-    .wrap{ position: relative; z-index: 1; }
-
-    a{color:inherit}
-    .wrap{
-      max-width: var(--max);
-      margin: 0 auto;
-      padding: 28px 20px 70px;
-    }
-
-    /* Header */
-    .topbar{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:14px;
-      padding: 10px 0 26px;
-    }
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:16px;
-      min-width: 240px;
-    }
-    .logo{
-      height: 220px;  /* keep big, but not ridiculous */
-      width: auto;
-      padding: 0;
-      border: none;
-      background: none;
-      object-fit: contain;
-      transition: transform .15s ease, opacity .15s ease;
-      opacity: 0.98;
-      display:block;
-    }
-    .logo:hover{
-      transform: translateY(-1px);
-      opacity: 1;
-    }
-    .brand h3{
-      margin:0;
-      font-size: 16px;
-      letter-spacing: 0.2px;
-    }
-    .brand p{
-      margin:2px 0 0;
-      font-size: 12.5px;
-      color: var(--muted);
-    }
-    .nav{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-    }
-    .chip{
-      text-decoration:none;
-      font-size: 13px;
-      color: rgba(255,255,255,0.85);
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.04);
-      padding: 8px 12px;
-      border-radius: 999px;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease;
-    }
-    .chip:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.07);
-      border-color: rgba(255,255,255,0.28);
-    }
-
-    /* Hero */
-    .hero{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.05);
-      border-radius: var(--radius);
-      box-shadow: 0 18px 50px rgba(0,0,0,0.45);
-      padding: 28px;
-      overflow:hidden;
-      position:relative;
-    }
-    .hero-grid{
-      display:grid;
-      grid-template-columns: 1.2fr 0.8fr;
-      gap: 18px;
-      position:relative;
-    }
-    @media (max-width: 860px){
-      .hero-grid{grid-template-columns: 1fr;}
-      .nav{justify-content:flex-start}
-    }
-
-    .badge{
-      display:inline-flex;
-      gap:8px;
-      align-items:center;
-      font-size: 13px;
-      color: rgba(255,255,255,0.78);
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.05);
-      padding: 7px 12px;
-      border-radius: 999px;
-      width: fit-content;
-    }
-    .dot{
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.8);
-      opacity: .7;
-    }
-
-    h1{
-      margin: 14px 0 10px;
-      font-size: clamp(32px, 4vw, 48px);
-      letter-spacing: -0.6px;
-      line-height: 1.1;
-    }
-    .sub{
-      margin: 0 0 18px;
-      color: var(--muted);
-      font-size: 16.5px;
-      max-width: 62ch;
-    }
-
-    .cta-row{
-      display:flex;
-      gap:12px;
-      flex-wrap:wrap;
-      margin-top: 16px;
-      align-items:center;
-    }
-
-    .btn{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      text-decoration:none;
-      border-radius: 14px;
-      padding: 12px 14px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.92);
-      font-weight: 650;
-      font-size: 14px;
-      transition: transform .15s ease, background .15s ease, border-color .15s ease, box-shadow .15s ease;
-    }
-    .btn:hover{
-      transform: translateY(-1px);
-      background: rgba(255,255,255,0.09);
-      border-color: rgba(255,255,255,0.28);
-    }
-
-    /* Sexy primary CTA */
-    .btn.primary{
-      position: relative;
-      background: linear-gradient(135deg, #2563eb 0%, #3b82f6 45%, #38bdf8 100%);
-      color: #ffffff;
-      border: none;
-      font-weight: 800;
-      letter-spacing: 0.2px;
-      box-shadow:
-        0 10px 28px rgba(37, 99, 235, 0.40),
-        inset 0 1px 0 rgba(255,255,255,0.25);
-      overflow: hidden;
-      padding: 13px 18px;
-      min-width: 210px;
-    }
-    .btn.primary::after{
-      content:"";
-      position:absolute;
-      inset: 0;
-      background: linear-gradient(
-        120deg,
-        transparent 30%,
-        rgba(255,255,255,0.28) 45%,
-        transparent 60%
-      );
-      transform: translateX(-120%);
-      transition: transform .6s ease;
-    }
-    .btn.primary:hover{
-      transform: translateY(-2px);
-      box-shadow:
-        0 16px 40px rgba(37, 99, 235, 0.52),
-        inset 0 1px 0 rgba(255,255,255,0.35);
-    }
-    .btn.primary:hover::after{ transform: translateX(120%); }
-    .btn.primary:active{
-      transform: translateY(0px);
-      box-shadow: 0 8px 22px rgba(37, 99, 235, 0.40);
-    }
-
-    .mini{
-      margin-top: 12px;
-      font-size: 13px;
-      color: rgba(255,255,255,0.65);
-    }
-
-    /* Side card */
-    .sidecard{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.035);
-      border-radius: var(--radius);
-      padding: 18px;
-    }
-    .sidecard h3{
-      margin: 0 0 8px;
-      font-size: 15px;
-      letter-spacing: 0.2px;
-    }
-    .sidecard p{
-      margin: 0 0 12px;
-      color: var(--muted);
-      font-size: 13.5px;
-    }
-    .list{
-      margin: 0;
-      padding-left: 18px;
-      color: rgba(255,255,255,0.86);
-      font-size: 13.5px;
-    }
-    .list li{margin: 8px 0;}
-
-    .hero-media{
-      border-radius: 16px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.02);
-      margin-bottom: 14px;
-      box-shadow: 0 14px 28px rgba(0,0,0,0.28);
-    }
-    .hero-media img{
-      display:block;
-      width:100%;
-      height:auto;
-    }
-
-    /* --------- SERVICES (this is the grid you want) --------- */
-    .services{
-      margin-top: 26px;
-    }
-    .services-head{
-      margin: 0 0 14px;
-    }
-    .services-kicker{
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.70);
-      letter-spacing: 0.2px;
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-    .services-title{
-      margin: 0 0 8px;
-      font-size: 22px;
-      letter-spacing: -0.2px;
-    }
-    .services-lede{
-      margin: 0;
-      color: rgba(255,255,255,0.70);
-      max-width: 72ch;
-    }
-
-    .cards-2, .cards-3{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 14px;
-    }
-    .cards-3{ margin-top: 14px; }
-
-    .service-card{
-      grid-column: span 6;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 18px;
-    }
-    .mini-card{
-      grid-column: span 4;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 16px;
-    }
-
-    @media (max-width: 860px){
-      .service-card{ grid-column: span 12; }
-      .mini-card{ grid-column: span 12; }
-    }
-
-    .card-top{
-      display:flex;
-      align-items:center;
-      gap: 12px;
-      margin-bottom: 10px;
-    }
-    .card-icon{
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.14);
-      background: rgba(255,255,255,0.04);
-      display:grid;
-      place-items:center;
-      flex: 0 0 auto;
-    }
-    .card-icon svg{
-      width: 20px;
-      height: 20px;
-      opacity: 0.95;
-    }
-
-    .card-title{
-      margin: 0;
-      font-size: 18px;
-      letter-spacing: -0.1px;
-    }
-    .card-sub{
-      margin: 2px 0 0;
-      color: rgba(255,255,255,0.70);
-      font-size: 13.5px;
-    }
-
-    .clean-list{
-      margin: 12px 0 0;
-      padding: 0;
-      list-style: none;
-      display:grid;
-      gap: 10px;
-    }
-    .clean-item{
-      padding: 10px 10px;
-      border: 1px solid rgba(255,255,255,0.10);
-      background: var(--surface2);
-      border-radius: 14px;
-      color: rgba(255,255,255,0.86);
-      font-size: 13.5px;
-      line-height: 1.35;
-    }
-    .clean-item strong{
-      display:block;
-      margin-bottom: 2px;
-      color: rgba(255,255,255,0.92);
-    }
-    .clean-item span{
-      display:block;
-      color: rgba(255,255,255,0.70);
-      font-size: 12.75px;
-    }
-
-    /* Section title reused for Marketing + Contact */
-    .section-title{
-      margin: 30px 0 12px;
-      font-size: 18px;
-      color: rgba(255,255,255,0.88);
-      letter-spacing: 0.2px;
-    }
-
-    /* Work examples */
-    .image-grid{
-      display:grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 14px;
-    }
-    .image-card{
-      grid-column: span 4;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      border-radius: var(--radius);
-      overflow: hidden;
-    }
-    .image-card img{
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      display: block;
-    }
-    .image-card figcaption{
-      padding: 12px 14px 14px;
-      font-size: 13.5px;
-      color: rgba(255,255,255,0.78);
-      line-height: 1.4;
-    }
-    .image-card strong{
-      display:block;
-      color: rgba(255,255,255,0.92);
-      margin-bottom: 4px;
-      font-size: 14px;
-    }
-    @media (max-width: 900px){
-      .image-card{ grid-column: span 12; }
-      .image-card img{ height: 220px; }
-    }
-
-    /* Form */
-    .form{
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.035);
-      border-radius: var(--radius);
-      padding: 18px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.22);
-    }
-    label{
-      display:block;
-      font-size: 13px;
-      color: rgba(255,255,255,0.85);
-      margin: 12px 0 6px;
-    }
-    input, textarea{
-      width: 100%;
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.16);
-      background: rgba(255,255,255,0.03);
-      color: rgba(255,255,255,0.92);
-      padding: 12px 12px;
-      font-size: 14px;
-      outline:none;
-    }
-    input:focus, textarea:focus{
-      border-color: rgba(255,255,255,0.32);
-      background: rgba(255,255,255,0.05);
-    }
-    textarea{min-height: 120px; resize: vertical;}
-    .form-row{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-    @media (max-width: 860px){ .form-row{grid-template-columns: 1fr;} }
-    .form-actions{
-      display:flex;
-      gap: 12px;
-      align-items:center;
-      flex-wrap:wrap;
-      margin-top: 14px;
-    }
-    .note{
-      font-size: 12.5px;
-      color: rgba(255,255,255,0.65);
-      margin-top: 10px;
-    }
-    footer{
-      margin-top: 42px;
-      color: rgba(255,255,255,0.55);
-      font-size: 12.5px;
-    }
-
-    /* Small-screen logo tweak */
-    @media (max-width: 520px){
-      .logo{height: 56px;}
-    }
-  </style>
 </head>
-
 <body>
+  <a class="skip-link" href="#content">Skip to content</a>
   <div class="wrap">
-
-    <div class="topbar">
-      <div class="brand">
-        <a href="/" aria-label="Shed Design Labs home">
-          <img src="logo.svg" alt="Shed Design Labs logo" class="logo" />
-        </a>
-        <div>
-          <h3>Shed Design Labs</h3>
-          <p>AI • Product Design • Marketing Support</p>
-        </div>
-      </div>
-
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="Shed Design Labs home">
+        <img src="/logo.svg" alt="Shed Design Labs logo" class="logo" />
+        <span class="brand-copy">
+          <strong>Shed Design Labs</strong>
+          <span>Product design, development, and AI support</span>
+        </span>
+      </a>
       <nav class="nav" aria-label="Primary">
-        <a class="chip" href="#services">Services</a>
-        <a class="chip" href="#marketing">Marketing</a>
-        <a class="chip" href="#contact">Contact</a>
+        <a class="nav-link" href="/services">Services</a>
+        <a class="nav-link" href="/ai-training">AI Training</a>
+        <a class="nav-link" href="/work">Work</a>
+        <a class="nav-link" href="/about">About</a>
+        <a class="nav-link" href="/contact">Contact</a>
+        <a class="btn btn-primary" href="/contact#book-call">Book a free 30-min strategy call</a>
       </nav>
-    </div>
+    </header>
 
-    <section class="hero">
-      <div class="hero-grid">
-        <div>
-          <div class="badge"><span class="dot"></span> Built for South Shore owners who want momentum</div>
-          <h1>South Shore AI, Website Design, and Marketing that helps you book more local jobs.</h1>
-          <p class="sub">
-            We help service businesses in Hanover, Marshfield, Scituate, Cohasset, Duxbury, and Norwell run smoother,
-            look more credible, and turn more website visits into estimate requests.
-          </p>
-
-          <div class="cta-row">
-            <a class="btn primary" href="#contact">Book a South Shore Growth Call</a>
-          </div>
-
-          <p class="mini">
-            First step: a quick local growth call to map your workflow and identify the fastest win.
-          </p>
+    <main id="content">
+      <section class="hero" aria-labelledby="home-hero-heading">
+        <h1 id="home-hero-heading">Design. Build. Automate.</h1>
+        <p class="lead">Shed Design Labs helps South Shore businesses ship better websites/apps and use AI to save time, without the agency overhead.</p>
+        <div class="btn-row" style="margin-top:16px;">
+          <a class="btn btn-primary" href="/contact#book-call">Book a free 30-min strategy call</a>
+          <a class="btn" href="/services">See services</a>
         </div>
+        <ul class="quick-list">
+          <li>Modern websites that convert</li>
+          <li>App prototypes → real products</li>
+          <li>Hands-on AI training + automations</li>
+        </ul>
+      </section>
 
-        <aside class="sidecard">
-          <div class="hero-media">
-            <img src="shed.png" alt="Workshop exterior with finished project" />
-          </div>
-          <h3>Fast wins for South Shore teams</h3>
-          <p>Clear outcomes in 1-2 weeks.</p>
-          <ul class="list">
-            <li>Local SEO copy updates that improve town-based searches</li>
-            <li>Automation for estimates, follow-ups, and lead routing</li>
-            <li>Photo-first pages that showcase real jobs and reviews</li>
-            <li>Simple ad + tracking setup so you know what drives calls</li>
-          </ul>
-        </aside>
-      </div>
-    </section>
+      <section class="strip" aria-label="Credibility">
+        <ul>
+          <li>Built by a product designer with experience shipping at large tech companies</li>
+          <li>Local-first: South Shore, MA (Hanover / Marshfield / Scituate / Cohasset / Duxbury / Norwell)</li>
+          <li>Fast turnaround, practical outcomes</li>
+        </ul>
+      </section>
 
-    <!-- ✅ Services Grid (THIS replaces your old “grid/card” section) -->
-    <section class="services" id="services">
-      <div class="services-head">
-        <div class="services-kicker">South Shore Services</div>
-        <h2 class="services-title">AI, Website & Marketing Support for South Shore Businesses</h2>
-        <p class="services-lede">
-          Built for owners in Hanover, Marshfield, Scituate, Cohasset, Duxbury, and Norwell who want more calls,
-          faster follow-up, and a brand that looks as good as their work.
-        </p>
-      </div>
-
-      <div class="cards-2">
-        <!-- AI -->
-        <section id="ai" class="service-card">
-          <div class="card-top">
-            <div class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 2l1.2 5.2L18 9l-4.8 1.8L12 16l-1.2-5.2L6 9l4.8-1.8L12 2z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
-                <path d="M19 14l.7 3 2.3.9-2.3.9L19 22l-.7-3-2.3-.9 2.3-.9.7-3z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-title">AI & Automation for Local Service Teams</h3>
-              <p class="card-sub">Less office time, more paid work in the field.</p>
-            </div>
-          </div>
-
-          <ul class="clean-list">
-            <li class="clean-item">
-              <strong>Turn missed inquiries into booked estimates.</strong>
-              <span>Example: a Marshfield contractor gets automatic text/email follow-ups within minutes, not next day.</span>
-            </li>
-            <li class="clean-item">
-              <strong>Speed up quotes without sounding robotic.</strong>
-              <span>Example: a Hanover home-service team uses ready-to-send estimate drafts and saves hours each week.</span>
-            </li>
-            <li class="clean-item">
-              <strong>Keep every lead organized from first call to signed job.</strong>
-              <span>Example: a Norwell owner sees one clear pipeline instead of sticky notes and inbox chaos.</span>
-            </li>
-          </ul>
-        </section>
-
-        <!-- Design -->
-        <section id="design" class="service-card">
-          <div class="card-top">
-            <div class="card-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M4 5h16v14H4V5z" stroke="white" stroke-width="1.8" />
-                <path d="M4 9h16" stroke="white" stroke-width="1.8" />
-                <path d="M9 9v10" stroke="white" stroke-width="1.8" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-title">South Shore Website Design That Books More Calls</h3>
-              <p class="card-sub">Show local proof, build trust fast, and convert traffic.</p>
-            </div>
-          </div>
-
-          <ul class="clean-list">
-            <li class="clean-item">
-              <strong>Make your work look high-end on first click.</strong>
-              <span>Example: a Scituate remodeler swaps stock photos for real projects and sees better lead quality.</span>
-            </li>
-            <li class="clean-item">
-              <strong>Guide visitors to one clear next step.</strong>
-              <span>Example: a Duxbury service business adds clearer "Request Estimate" paths and gets more form fills.</span>
-            </li>
-            <li class="clean-item">
-              <strong>Write copy that sounds like your team, not a template.</strong>
-              <span>Example: a Cohasset brand refresh highlights neighborhoods served and closes more local calls.</span>
-            </li>
-          </ul>
-        </section>
-      </div>
-
-      <!-- Marketing -->
-      <h3 class="section-title">Work examples</h3>
-      <p style="margin:0 0 12px; color: rgba(255,255,255,0.70); max-width: 72ch;">
-        Real visuals and deliverables — the kind of assets that make a business feel credible at first glance.
-      </p>
-
-      <div class="image-grid">
-        <figure class="image-card">
-          <img src="bg.png" alt="Exterior build photo used in a landing page hero" />
-          <figcaption>
-            <strong>Photo‑first landing page</strong>
-            Replace stock imagery with real builds, then pair with short, confident copy.
-          </figcaption>
-        </figure>
-        <figure class="image-card">
-          <img src="bg2.png" alt="Interior detail shot for service credibility" />
-          <figcaption>
-            <strong>Service proof gallery</strong>
-            A fast, scrollable set of before/after or detail shots that sells quality.
-          </figcaption>
-        </figure>
-        <figure class="image-card">
-          <img src="Textsvg.png" alt="Branded graphic asset for campaigns" />
-          <figcaption>
-            <strong>Branded ad creative</strong>
-            Simple, consistent visuals for social and local ads that don’t look homemade.
-          </figcaption>
-        </figure>
-      </div>
-
-      <h3 id="marketing" class="section-title">Local Marketing Support for Hanover to Duxbury</h3>
-      <p style="margin:0 0 12px; color: rgba(255,255,255,0.70); max-width: 72ch;">
-        Practical campaigns for South Shore, MA: clearer messaging, better creative, and simple reporting so you know what is actually driving calls.
-      </p>
-
-      <div class="cards-3">
-        <section class="mini-card">
-          <div class="card-top">
-            <div class="card-icon" aria-hidden="true" style="width:38px;height:38px;border-radius:13px;">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M5 6h14v9H8l-3 3V6z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-title" style="font-size:16px;">Messaging & Local SEO Copy</h3>
-              <p class="card-sub">Get found and understood quickly.</p>
-            </div>
-          </div>
-          <ul class="clean-list">
-            <li class="clean-item"><strong>Town-specific service copy</strong><span>Rank better for searches like "deck builder Hanover MA" and "kitchen remodel Norwell."</span></li>
-            <li class="clean-item"><strong>Clear value statements</strong><span>Help homeowners understand why they should call you first.</span></li>
-          </ul>
-        </section>
-
-        <section class="mini-card">
-          <div class="card-top">
-            <div class="card-icon" aria-hidden="true" style="width:38px;height:38px;border-radius:13px;">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M12 21a9 9 0 1 1 0-18 9 9 0 0 1 0 18z" stroke="white" stroke-width="1.8"/>
-                <path d="M12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8z" stroke="white" stroke-width="1.8"/>
-                <path d="M12 12h6" stroke="white" stroke-width="1.8"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-title" style="font-size:16px;">Campaign Setup & Testing</h3>
-              <p class="card-sub">Spend smarter, not wider.</p>
-            </div>
-          </div>
-          <ul class="clean-list">
-            <li class="clean-item"><strong>Geo-focused ad targeting</strong><span>Prioritize Hanover, Marshfield, Scituate, Cohasset, Duxbury, and Norwell first.</span></li>
-            <li class="clean-item"><strong>Simple weekly testing</strong><span>Keep what brings calls; cut what does not.</span></li>
-          </ul>
-        </section>
-
-        <section class="mini-card">
-          <div class="card-top">
-            <div class="card-icon" aria-hidden="true" style="width:38px;height:38px;border-radius:13px;">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M13 2L4 14h7l-1 8 10-14h-7l0-6z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/>
-              </svg>
-            </div>
-            <div>
-              <h3 class="card-title" style="font-size:16px;">Reporting Owners Actually Use</h3>
-              <p class="card-sub">No jargon, just signal.</p>
-            </div>
-          </div>
-          <ul class="clean-list">
-            <li class="clean-item"><strong>Lead-source visibility</strong><span>See which channel drove each call or form.</span></li>
-            <li class="clean-item"><strong>Clear monthly takeaways</strong><span>Know what to do next without digging through dashboards.</span></li>
-          </ul>
-        </section>
-      </div>
-
-      <div class="cta-row" style="margin-top:20px;">
-        <a class="btn primary" href="#contact">Book a South Shore Growth Call</a>
-        <a class="btn" href="#contact">Get a Free Website + Lead Flow Audit</a>
-      </div>
-      <p class="mini">
-        We'll review your current site, follow-up process, and local visibility, then give you a clear 30-day action plan.
-      </p>
-    </section>
-
-    <h3 id="contact" class="section-title">Contact</h3>
-    <section class="form">
-      <p style="margin:0 0 8px; color: rgba(255,255,255,0.74);">
-        Send a quick note and I’ll reply with next steps. Include what you do and what you want to improve.
-      </p>
-
-      <form action="https://formspree.io/f/mkogkjew" method="POST">
-        <div class="form-row">
-          <div>
-            <label for="name">Name</label>
-            <input id="name" name="name" placeholder="Your name" required />
-          </div>
-          <div>
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="you@company.com" required />
-          </div>
+      <section class="panel" aria-labelledby="core-services-heading">
+        <h2 class="section-title" id="core-services-heading">Core Services</h2>
+        <p class="section-copy">A clear ladder of offers so you can start where you are and scale support as you grow.</p>
+        <div class="grid-3">
+          <article class="card">
+            <h3>Website Design &amp; Development</h3>
+            <p>Modern, fast, conversion-focused websites for local businesses.</p>
+            <ul>
+              <li>Mobile-first design</li>
+              <li>Local SEO foundations</li>
+              <li>Analytics + tracking</li>
+              <li>Simple CMS editing</li>
+            </ul>
+            <a href="/services#websites">Explore website services</a>
+          </article>
+          <article class="card">
+            <h3>App Design &amp; Development</h3>
+            <p>From idea to prototype to working product.</p>
+            <ul>
+              <li>Product strategy + scoping</li>
+              <li>Prototypes in Figma</li>
+              <li>Front-end builds</li>
+              <li>AI feature integration</li>
+            </ul>
+            <a href="/services#apps">Explore app services</a>
+          </article>
+          <article class="card">
+            <h3>AI Training (In-Person + Private)</h3>
+            <p>Hands-on workshops that leave you with workflows you actually use.</p>
+            <ul>
+              <li>1:1 sessions</li>
+              <li>Team workshops</li>
+              <li>Prompt frameworks</li>
+              <li>Real business automations</li>
+            </ul>
+            <a href="/ai-training">Explore AI training</a>
+          </article>
         </div>
+      </section>
 
-        <label for="company">Business / Org (optional)</label>
-        <input id="company" name="company" placeholder="Company name" />
-
-        <label for="help">What can I help with?</label>
-        <textarea id="help" name="message" placeholder="Example: I want a stronger landing page and better follow‑up automation." required></textarea>
-
-        <input type="text" name="_gotcha" style="display:none" />
-
-        <div class="note">
-          Prefer a quick call? Mention your availability and I’ll send a calendar link.
+      <section class="panel" aria-labelledby="how-it-works-heading">
+        <h2 class="section-title" id="how-it-works-heading">How it works</h2>
+        <div class="grid-3">
+          <article class="step">
+            <strong>Step 1</strong>
+            <p>Quick discovery call (30 min)</p>
+          </article>
+          <article class="step">
+            <strong>Step 2</strong>
+            <p>Build a prototype or plan in days, not weeks</p>
+          </article>
+          <article class="step">
+            <strong>Step 3</strong>
+            <p>Ship + iterate (monthly support available)</p>
+          </article>
         </div>
-      </form>
-    </section>
+      </section>
+
+      <section class="panel" aria-labelledby="addons-heading">
+        <h2 class="section-title" id="addons-heading">Add-on pillars</h2>
+        <div class="grid-3">
+          <article class="small-card">
+            <h3>AI Workflow Automation</h3>
+            <p>Automate intake, follow-ups, FAQs, content, and internal ops.</p>
+            <a href="/services#automation">View automation support</a>
+          </article>
+          <article class="small-card">
+            <h3>Product &amp; UX Consulting</h3>
+            <p>UX audits, roadmap help, design systems, rapid prototyping.</p>
+            <a href="/services#consulting">View consulting support</a>
+          </article>
+          <article class="small-card">
+            <h3>Ongoing Digital Partnership</h3>
+            <p>Your on-call product + AI partner (monthly retainer).</p>
+            <a href="/services#partnership">View partnership support</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="local-heading">
+        <h2 class="section-title" id="local-heading">Built for South Shore businesses</h2>
+        <p class="section-copy">We partner with businesses in Hanover, Marshfield, Scituate, Cohasset, Duxbury, Norwell, Hingham, and Plymouth across contractors, clinics, hospitality, local retail, and professional services. The goal is practical delivery: better lead flow, faster operations, and stronger digital credibility.</p>
+        <div class="btn-row" style="margin-top:14px;">
+          <a class="btn" href="/contact#book-call">Talk about your business</a>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="featured-work-heading">
+        <h2 class="section-title" id="featured-work-heading">Featured Work</h2>
+        <div class="grid-3">
+          <article class="work-card">
+            <h3>Website refresh + local SEO foundation (Coming soon)</h3>
+            <p>Service-site rebuild focused on conversion flow and local search visibility.</p>
+          </article>
+          <article class="work-card">
+            <h3>Internal dashboard redesign (Coming soon)</h3>
+            <p>Operational UX redesign to reduce manual admin and improve team visibility.</p>
+          </article>
+          <article class="work-card">
+            <h3>AI workflow automation setup (Coming soon)</h3>
+            <p>Automation system for intake, follow-up, and task routing with clear handoff logic.</p>
+          </article>
+        </div>
+        <p class="notice">More case studies publishing soon.</p>
+      </section>
+
+      <section class="panel" aria-labelledby="cta-heading">
+        <h2 class="section-title" id="cta-heading">Not sure what you need?</h2>
+        <p class="section-copy">Book a free 30-minute strategy call and I’ll recommend the fastest path.</p>
+        <div class="btn-row" style="margin-top:14px;">
+          <a class="btn btn-primary" href="/contact#book-call">Book a free 30-min strategy call</a>
+        </div>
+      </section>
+    </main>
 
     <footer>
-      © <span id="y"></span> Shed Design Labs • Built with GitHub Pages
+      © <span id="y"></span> Shed Design Labs
     </footer>
   </div>
-
   <script>
-    document.getElementById("y").textContent = new Date().getFullYear();
+    document.getElementById('y').textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
