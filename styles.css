@@ -15,6 +15,8 @@
   --cta: #3b82f6;
   --cta-hover: #2563eb;
   --ring: rgba(120, 186, 255, 0.64);
+  --logo-size: 132px;
+  --logo-gap: 14px;
 }
 
 * {
@@ -124,10 +126,10 @@ textarea:focus-visible {
   position: sticky;
   top: 12px;
   z-index: 8;
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 14px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px 20px;
   margin-bottom: 18px;
   padding: 12px 14px;
   border-radius: 18px;
@@ -140,7 +142,7 @@ textarea:focus-visible {
 .brand {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--logo-gap);
   text-decoration: none;
 }
 
@@ -154,7 +156,7 @@ textarea:focus-visible {
 .logo {
   display: block;
   width: auto;
-  height: 149px;
+  height: var(--logo-size);
   filter: drop-shadow(0 10px 20px rgba(6, 12, 25, 0.3));
 }
 
@@ -179,6 +181,7 @@ textarea:focus-visible {
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
+  margin-left: calc(var(--logo-size) + var(--logo-gap));
 }
 
 .nav a {
@@ -273,7 +276,9 @@ textarea:focus-visible {
 }
 
 .top-cta {
-  align-self: flex-start;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
   white-space: nowrap;
 }
 
@@ -593,18 +598,27 @@ footer {
 
   .topbar {
     position: static;
+    display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: flex-start;
   }
 
   .top-cta {
     align-self: flex-start;
   }
+
+  .nav {
+    margin-left: 0;
+  }
 }
 
 @media (max-width: 640px) {
+  :root {
+    --logo-size: 110px;
+  }
+
   .logo {
-    height: 115px;
+    height: var(--logo-size);
   }
 
   .wrap {
