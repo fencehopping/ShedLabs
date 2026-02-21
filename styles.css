@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap");
+
 :root {
   --text: rgba(247, 250, 255, 0.95);
   --muted: rgba(208, 222, 245, 0.76);
@@ -31,7 +33,7 @@ html {
 
 body {
   min-height: 100vh;
-  font-family: "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: "Montserrat", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: var(--text);
   line-height: 1.62;
   letter-spacing: 0.01em;
@@ -457,6 +459,38 @@ main > article {
   margin-top: 12px;
   color: rgba(223, 237, 255, 0.84);
   font-size: 0.94rem;
+}
+
+.image-placeholder {
+  margin-top: 12px;
+  border: 1px dashed rgba(182, 216, 255, 0.52);
+  border-radius: 12px;
+  min-height: 170px;
+  display: grid;
+  place-content: center;
+  gap: 4px;
+  text-align: center;
+  background:
+    linear-gradient(135deg, rgba(41, 62, 99, 0.35), rgba(12, 21, 41, 0.22)),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(135, 183, 255, 0.09) 0,
+      rgba(135, 183, 255, 0.09) 10px,
+      transparent 10px,
+      transparent 20px
+    );
+}
+
+.image-placeholder strong {
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: rgba(225, 239, 255, 0.9);
+}
+
+.image-placeholder span {
+  color: var(--muted);
+  font-size: 0.82rem;
 }
 
 form {
