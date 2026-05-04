@@ -59,7 +59,7 @@
     }
 
     var particles = [];
-    var particleCount = 64;
+    var particleCount = 21;
     var pointer = {
       x: window.innerWidth * 0.5,
       y: window.innerHeight * 0.5,
@@ -89,6 +89,9 @@
           baseX: Math.random() * window.innerWidth,
           baseY: Math.random() * window.innerHeight,
           radius: 1.2 + Math.random() * 2.6,
+          glow: 2.4 + Math.random() * 4.8,
+          alpha: 0.08 + Math.random() * 0.26,
+          pulse: 0.18 + Math.random() * 0.72,
           angle: Math.random() * Math.PI * 2,
           orbit: 18 + Math.random() * 54,
           speed: 0.004 + Math.random() * 0.009,
@@ -130,19 +133,18 @@
         particle.x += (orbitX + (pointer.x - orbitX) * pull * 0.42 - particle.x) * 0.055;
         particle.y += (orbitY + (pointer.y - orbitY) * pull * 0.42 - particle.y) * 0.055;
 
+        var opacity = particle.alpha + Math.sin(particle.angle * 2.4) * particle.pulse * 0.08 + pull * 0.32;
+        var size = particle.radius + pull * 4.4;
+
         context.beginPath();
-        context.fillStyle = 'hsla(' + particle.hue + ', 96%, 72%, ' + (0.18 + pull * 0.55) + ')';
-        context.arc(particle.x, particle.y, particle.radius + pull * 3.2, 0, Math.PI * 2);
+        context.fillStyle = 'hsla(' + particle.hue + ', 96%, 70%, ' + Math.min(opacity * 0.26, 0.22) + ')';
+        context.arc(particle.x, particle.y, size * particle.glow, 0, Math.PI * 2);
         context.fill();
 
-        if (distance < 170) {
-          context.beginPath();
-          context.strokeStyle = 'rgba(125, 211, 252, ' + (0.18 * (1 - distance / 170)) + ')';
-          context.lineWidth = 1;
-          context.moveTo(particle.x, particle.y);
-          context.lineTo(pointer.x, pointer.y);
-          context.stroke();
-        }
+        context.beginPath();
+        context.fillStyle = 'hsla(' + particle.hue + ', 96%, 82%, ' + Math.min(opacity + 0.08, 0.82) + ')';
+        context.arc(particle.x, particle.y, size, 0, Math.PI * 2);
+        context.fill();
       }
 
       animationFrame = window.requestAnimationFrame(render);
