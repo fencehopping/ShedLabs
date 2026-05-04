@@ -11,7 +11,7 @@
     startMouseField();
   }
 
-  var revealTargets = document.querySelectorAll('.topbar, .hero, .strip, .panel, .card, .step, .small-card, .work-card');
+  var revealTargets = document.querySelectorAll('.topbar, .hero, .strip, .panel, .card, .step, .small-card, .work-card, .trust-strip, .editorial-section, .service-tile, .process-section, .process-line article, .split-section, .cta-band');
 
   if (!revealTargets.length) {
     return;
