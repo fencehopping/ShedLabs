@@ -15,8 +15,10 @@
   --cta: #3b82f6;
   --cta-hover: #2563eb;
   --ring: rgba(120, 186, 255, 0.64);
-  --logo-size: 92px;
+  --logo-size: 190px;
   --logo-gap: 12px;
+  --mouse-x: 50vw;
+  --mouse-y: 50vh;
 }
 
 * {
@@ -87,16 +89,27 @@ body::after {
   animation: orb-float 12s ease-in-out infinite;
 }
 
-.mouse-field {
+.cursor-spotlight {
   position: fixed;
   inset: 0;
   z-index: 0;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
-  opacity: 0.76;
-  filter: blur(1.8px);
+  background:
+    radial-gradient(
+      700px circle at var(--mouse-x) var(--mouse-y),
+      rgba(124, 92, 255, 0.18),
+      rgba(56, 189, 248, 0.08) 28%,
+      transparent 58%
+    );
   mix-blend-mode: screen;
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.cursor-spotlight.is-active {
+  opacity: 1;
 }
 
 .wrap {
@@ -139,11 +152,12 @@ textarea:focus-visible {
   top: 16px;
   z-index: 8;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  gap: 22px;
-  margin-bottom: 18px;
-  padding: 10px 0;
+  justify-content: center;
+  gap: 12px;
+  margin-bottom: 26px;
+  padding: 10px 0 18px;
   border-radius: 16px;
   border: 0;
   background: transparent;
@@ -153,13 +167,19 @@ textarea:focus-visible {
 
 .brand {
   display: flex;
+  flex-direction: column;
   align-items: center;
   gap: var(--logo-gap);
+  order: 2;
   text-decoration: none;
+  text-align: center;
 }
 
 .brand-stack {
-  display: contents;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
   min-width: 0;
 }
 
@@ -193,6 +213,7 @@ textarea:focus-visible {
   justify-content: center;
   gap: 2px;
   margin-left: 0;
+  order: 1;
 }
 
 .nav a {
@@ -280,6 +301,67 @@ textarea:focus-visible {
   box-shadow: 0 18px 36px rgba(37, 99, 235, 0.42);
 }
 
+.glow-card {
+  --card-x: 50%;
+  --card-y: 50%;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background:
+    linear-gradient(180deg, rgba(18, 28, 50, 0.46), rgba(7, 13, 27, 0.58)),
+    rgba(7, 13, 27, 0.42);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 18px 44px rgba(0, 0, 0, 0.22);
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+}
+
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      360px circle at var(--card-x) var(--card-y),
+      rgba(255, 255, 255, 0.16),
+      rgba(124, 92, 255, 0.14) 24%,
+      transparent 55%
+    );
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.glow-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.glow-card:hover,
+.glow-card:focus-within {
+  transform: translateY(-2px) scale(1.01);
+  border-color: rgba(255, 255, 255, 0.22);
+  background:
+    linear-gradient(180deg, rgba(20, 32, 58, 0.54), rgba(8, 15, 30, 0.68)),
+    rgba(7, 13, 27, 0.5);
+}
+
+.glow-card:hover::before,
+.glow-card:focus-within::before {
+  opacity: 1;
+}
+
 .btn-row {
   display: flex;
   flex-wrap: wrap;
@@ -287,6 +369,7 @@ textarea:focus-visible {
 }
 
 .top-cta {
+  order: 3;
   align-self: center;
   white-space: nowrap;
 }
@@ -791,13 +874,8 @@ footer {
 
 .service-tile {
   min-height: 310px;
-  padding: 0;
-  background: transparent;
-  transition: transform 220ms ease;
-}
-
-.service-tile:hover {
-  transform: translateY(-4px);
+  padding: 28px;
+  border-radius: 14px;
 }
 
 .tile-index,
@@ -871,6 +949,8 @@ footer {
   position: relative;
   display: grid;
   justify-items: center;
+  border-radius: 14px;
+  padding: 26px 20px;
 }
 
 .process-line h3 {
@@ -947,17 +1027,17 @@ footer {
     position: static;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 14px;
   }
 
   .top-cta {
-    align-self: flex-start;
+    align-self: center;
   }
 
   .nav {
     margin-left: 0;
-    justify-content: flex-start;
+    justify-content: center;
   }
 
   .home-hero {
@@ -1017,7 +1097,7 @@ footer {
 
 @media (max-width: 640px) {
   :root {
-    --logo-size: 82px;
+    --logo-size: 160px;
   }
 
   .logo {
@@ -1094,7 +1174,7 @@ footer {
     scroll-behavior: auto;
   }
 
-  .mouse-field {
+  .cursor-spotlight {
     display: none;
   }
 

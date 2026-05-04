@@ -8,7 +8,7 @@
   var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
 
   if (!shouldReduceMotion && canHover) {
-    startMouseField();
+    startCursorEffects();
   }
 
   var revealTargets = document.querySelectorAll('.topbar, .hero, .strip, .panel, .card, .step, .small-card, .work-card, .trust-strip, .editorial-section, .service-tile, .process-section, .process-line article, .split-section, .cta-band');
@@ -50,116 +50,63 @@
     observer.observe(node);
   });
 
-  function startMouseField() {
-    var canvas = document.createElement('canvas');
-    var context = canvas.getContext('2d');
-
-    if (!context) {
-      return;
-    }
-
-    var particles = [];
-    var particleCount = 21;
-    var pointer = {
+  function startCursorEffects() {
+    var root = document.documentElement;
+    var spotlight = document.createElement('div');
+    var mouse = {
       x: window.innerWidth * 0.5,
       y: window.innerHeight * 0.5,
-      targetX: window.innerWidth * 0.5,
-      targetY: window.innerHeight * 0.5
+      frame: null
     };
-    var animationFrame = null;
-    var pixelRatio = 1;
 
-    canvas.className = 'mouse-field';
-    canvas.setAttribute('aria-hidden', 'true');
-    document.body.insertBefore(canvas, document.body.firstChild);
+    spotlight.className = 'cursor-spotlight';
+    spotlight.setAttribute('aria-hidden', 'true');
+    document.body.insertBefore(spotlight, document.body.firstChild);
 
-    function resize() {
-      pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = Math.floor(window.innerWidth * pixelRatio);
-      canvas.height = Math.floor(window.innerHeight * pixelRatio);
-      canvas.style.width = window.innerWidth + 'px';
-      canvas.style.height = window.innerHeight + 'px';
-      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    function scheduleGlobalUpdate() {
+      if (mouse.frame) {
+        return;
+      }
 
-      particles = [];
-      for (var index = 0; index < particleCount; index += 1) {
-        particles.push({
-          x: Math.random() * window.innerWidth,
-          y: Math.random() * window.innerHeight,
-          baseX: Math.random() * window.innerWidth,
-          baseY: Math.random() * window.innerHeight,
-          radius: 1.2 + Math.random() * 2.6,
-          glow: 2.4 + Math.random() * 4.8,
-          alpha: 0.08 + Math.random() * 0.26,
-          pulse: 0.18 + Math.random() * 0.72,
-          angle: Math.random() * Math.PI * 2,
-          orbit: 18 + Math.random() * 54,
-          speed: 0.004 + Math.random() * 0.009,
-          hue: 188 + Math.random() * 32
+      mouse.frame = window.requestAnimationFrame(function () {
+        root.style.setProperty('--mouse-x', mouse.x + 'px');
+        root.style.setProperty('--mouse-y', mouse.y + 'px');
+        spotlight.classList.add('is-active');
+        mouse.frame = null;
+      });
+    }
+
+    function handleGlobalPointer(event) {
+      mouse.x = event.clientX;
+      mouse.y = event.clientY;
+      scheduleGlobalUpdate();
+    }
+
+    window.addEventListener('pointermove', handleGlobalPointer, { passive: true });
+    window.addEventListener('pointerleave', function () {
+      spotlight.classList.remove('is-active');
+    });
+
+    document.querySelectorAll('.glow-card').forEach(function (card) {
+      var cardFrame = null;
+      var cardX = 0;
+      var cardY = 0;
+
+      card.addEventListener('pointermove', function (event) {
+        var rect = card.getBoundingClientRect();
+        cardX = event.clientX - rect.left;
+        cardY = event.clientY - rect.top;
+
+        if (cardFrame) {
+          return;
+        }
+
+        cardFrame = window.requestAnimationFrame(function () {
+          card.style.setProperty('--card-x', cardX + 'px');
+          card.style.setProperty('--card-y', cardY + 'px');
+          cardFrame = null;
         });
-      }
-    }
-
-    function updatePointer(event) {
-      pointer.targetX = event.clientX;
-      pointer.targetY = event.clientY;
-    }
-
-    function render() {
-      context.clearRect(0, 0, window.innerWidth, window.innerHeight);
-      pointer.x += (pointer.targetX - pointer.x) * 0.1;
-      pointer.y += (pointer.targetY - pointer.y) * 0.1;
-
-      var halo = context.createRadialGradient(pointer.x, pointer.y, 0, pointer.x, pointer.y, 210);
-      halo.addColorStop(0, 'rgba(102, 213, 255, 0.28)');
-      halo.addColorStop(0.38, 'rgba(59, 130, 246, 0.13)');
-      halo.addColorStop(1, 'rgba(59, 130, 246, 0)');
-      context.fillStyle = halo;
-      context.beginPath();
-      context.arc(pointer.x, pointer.y, 210, 0, Math.PI * 2);
-      context.fill();
-
-      for (var index = 0; index < particles.length; index += 1) {
-        var particle = particles[index];
-        particle.angle += particle.speed;
-
-        var orbitX = particle.baseX + Math.cos(particle.angle) * particle.orbit;
-        var orbitY = particle.baseY + Math.sin(particle.angle * 0.82) * particle.orbit;
-        var dx = orbitX - pointer.x;
-        var dy = orbitY - pointer.y;
-        var distance = Math.sqrt(dx * dx + dy * dy);
-        var pull = Math.max(0, 1 - distance / 260);
-
-        particle.x += (orbitX + (pointer.x - orbitX) * pull * 0.42 - particle.x) * 0.055;
-        particle.y += (orbitY + (pointer.y - orbitY) * pull * 0.42 - particle.y) * 0.055;
-
-        var opacity = particle.alpha + Math.sin(particle.angle * 2.4) * particle.pulse * 0.08 + pull * 0.32;
-        var size = particle.radius + pull * 4.4;
-
-        context.beginPath();
-        context.fillStyle = 'hsla(' + particle.hue + ', 96%, 70%, ' + Math.min(opacity * 0.26, 0.22) + ')';
-        context.arc(particle.x, particle.y, size * particle.glow, 0, Math.PI * 2);
-        context.fill();
-
-        context.beginPath();
-        context.fillStyle = 'hsla(' + particle.hue + ', 96%, 82%, ' + Math.min(opacity + 0.08, 0.82) + ')';
-        context.arc(particle.x, particle.y, size, 0, Math.PI * 2);
-        context.fill();
-      }
-
-      animationFrame = window.requestAnimationFrame(render);
-    }
-
-    window.addEventListener('resize', resize, { passive: true });
-    window.addEventListener('pointermove', updatePointer, { passive: true });
-
-    resize();
-    render();
-
-    window.addEventListener('pagehide', function () {
-      if (animationFrame) {
-        window.cancelAnimationFrame(animationFrame);
-      }
+      }, { passive: true });
     });
   }
 })();
