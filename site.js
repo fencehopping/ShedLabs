@@ -16,7 +16,7 @@
     startCursorEffects();
   }
 
-  var revealTargets = document.querySelectorAll('.hero, .strip, .panel, .card, .step, .small-card, .work-card, .trust-strip, .editorial-section, .service-tile, .process-section, .process-line article, .split-section, .cta-band');
+  var revealTargets = document.querySelectorAll('.hero, .strip, .panel, .card, .step, .small-card, .work-card, .product-carousel, .editorial-section, .service-tile, .process-section, .process-line article, .split-section, .cta-band');
 
   if (!revealTargets.length) {
     return;
