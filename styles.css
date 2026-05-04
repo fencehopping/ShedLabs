@@ -87,6 +87,17 @@ body::after {
   animation: orb-float 12s ease-in-out infinite;
 }
 
+.mouse-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  opacity: 0.72;
+  mix-blend-mode: screen;
+}
+
 .wrap {
   position: relative;
   z-index: 1;
@@ -670,6 +681,10 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+
+  .mouse-field {
+    display: none;
   }
 
   * {
