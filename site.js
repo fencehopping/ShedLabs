@@ -6,12 +6,17 @@
 
   var shouldReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var topbar = document.querySelector('.topbar');
+
+  if (topbar) {
+    startHeaderScroll(topbar);
+  }
 
   if (!shouldReduceMotion && canHover) {
     startCursorEffects();
   }
 
-  var revealTargets = document.querySelectorAll('.topbar, .hero, .strip, .panel, .card, .step, .small-card, .work-card, .trust-strip, .editorial-section, .service-tile, .process-section, .process-line article, .split-section, .cta-band');
+  var revealTargets = document.querySelectorAll('.hero, .strip, .panel, .card, .step, .small-card, .work-card, .trust-strip, .editorial-section, .service-tile, .process-section, .process-line article, .split-section, .cta-band');
 
   if (!revealTargets.length) {
     return;
@@ -49,6 +54,30 @@
   revealTargets.forEach(function (node) {
     observer.observe(node);
   });
+
+  function startHeaderScroll(header) {
+    var compactOffset = 90;
+    var scrollFrame = null;
+
+    function updateHeaderState() {
+      var isCompact = window.scrollY > compactOffset;
+      document.body.classList.toggle('header-compact', isCompact);
+      header.setAttribute('data-compact', isCompact ? 'true' : 'false');
+      scrollFrame = null;
+    }
+
+    function scheduleHeaderUpdate() {
+      if (scrollFrame) {
+        return;
+      }
+
+      scrollFrame = window.requestAnimationFrame(updateHeaderState);
+    }
+
+    updateHeaderState();
+    window.addEventListener('scroll', scheduleHeaderUpdate, { passive: true });
+    window.addEventListener('resize', scheduleHeaderUpdate);
+  }
 
   function startCursorEffects() {
     var root = document.documentElement;

@@ -15,8 +15,8 @@
   --cta: #3b82f6;
   --cta-hover: #2563eb;
   --ring: rgba(120, 186, 255, 0.64);
-  --logo-size: 190px;
-  --logo-gap: 12px;
+  --logo-size: 240px;
+  --logo-gap: 0;
   --mouse-x: 50vw;
   --mouse-y: 50vh;
 }
@@ -163,6 +163,13 @@ textarea:focus-visible {
   background: transparent;
   backdrop-filter: none;
   box-shadow: none;
+  transition:
+    padding 240ms ease,
+    gap 240ms ease,
+    background-color 240ms ease,
+    border-color 240ms ease,
+    box-shadow 240ms ease,
+    backdrop-filter 240ms ease;
 }
 
 .brand {
@@ -170,17 +177,19 @@ textarea:focus-visible {
   flex-direction: column;
   align-items: center;
   gap: var(--logo-gap);
-  order: 2;
+  order: 1;
   text-decoration: none;
   text-align: center;
+  transition: transform 240ms ease;
 }
 
 .brand-stack {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-width: 0;
+  transition: flex-direction 240ms ease, gap 240ms ease;
 }
 
 .logo {
@@ -188,22 +197,7 @@ textarea:focus-visible {
   width: auto;
   height: var(--logo-size);
   filter: drop-shadow(0 10px 20px rgba(6, 12, 25, 0.3));
-}
-
-.brand-copy {
-  line-height: 1.24;
-}
-
-.brand-copy strong {
-  display: block;
-  font-size: 0.98rem;
-  letter-spacing: 0;
-}
-
-.brand-copy span {
-  display: block;
-  color: var(--muted);
-  font-size: 0.78rem;
+  transition: height 260ms ease, filter 260ms ease;
 }
 
 .nav {
@@ -211,9 +205,10 @@ textarea:focus-visible {
   align-items: center;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 2px;
+  column-gap: 28px;
+  row-gap: 8px;
   margin-left: 0;
-  order: 1;
+  order: 2;
 }
 
 .nav a {
@@ -229,6 +224,47 @@ textarea:focus-visible {
   border-radius: 10px;
   padding: 8px 10px;
   transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease;
+}
+
+.header-compact .topbar {
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 7px 12px;
+  border: 1px solid rgba(162, 202, 255, 0.18);
+  background: rgba(5, 12, 28, 0.7);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  backdrop-filter: blur(18px) saturate(1.2);
+  box-shadow: 0 16px 42px rgba(2, 8, 20, 0.38);
+}
+
+.header-compact .brand-stack {
+  flex: 1 1 auto;
+  flex-direction: row;
+  justify-content: flex-start;
+  gap: 28px;
+}
+
+.header-compact .logo {
+  height: 72px;
+  filter: drop-shadow(0 8px 16px rgba(3, 8, 18, 0.32));
+}
+
+.header-compact .nav {
+  column-gap: 16px;
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.header-compact .nav-link {
+  font-size: 0.72rem;
+  padding: 6px 8px;
+}
+
+.header-compact .top-cta {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  font-size: 0.68rem;
 }
 
 .nav-link:hover,
@@ -371,6 +407,11 @@ textarea:focus-visible {
 .top-cta {
   order: 3;
   align-self: center;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 0.72rem;
+  line-height: 1.1;
+  box-shadow: 0 8px 20px rgba(22, 72, 150, 0.18);
   white-space: nowrap;
 }
 
@@ -1024,11 +1065,27 @@ footer {
   }
 
   .topbar {
-    position: static;
+    position: sticky;
+    top: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 14px;
+  }
+
+  .header-compact .topbar {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 10px 10px;
+  }
+
+  .header-compact .brand-stack {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .header-compact .logo {
+    height: 108px;
   }
 
   .top-cta {
@@ -1038,6 +1095,12 @@ footer {
   .nav {
     margin-left: 0;
     justify-content: center;
+    column-gap: 16px;
+  }
+
+  .header-compact .nav {
+    column-gap: 14px;
+    row-gap: 4px;
   }
 
   .home-hero {
@@ -1097,7 +1160,7 @@ footer {
 
 @media (max-width: 640px) {
   :root {
-    --logo-size: 160px;
+    --logo-size: 200px;
   }
 
   .logo {
@@ -1108,21 +1171,27 @@ footer {
     padding: 18px 16px 58px;
   }
 
-  .brand-copy strong {
-    font-size: 0.92rem;
-  }
-
-  .brand-copy span {
-    font-size: 0.72rem;
-  }
-
   .hero,
   .panel {
     padding: 18px;
   }
 
   .top-cta {
-    width: 100%;
+    width: auto;
+  }
+
+  .header-compact .logo {
+    height: 88px;
+  }
+
+  .header-compact .nav-link {
+    font-size: 0.68rem;
+    padding: 5px 7px;
+  }
+
+  .header-compact .top-cta {
+    font-size: 0.64rem;
+    padding: 6px 9px;
   }
 
   .home-hero {
