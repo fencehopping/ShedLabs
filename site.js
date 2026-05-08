@@ -56,11 +56,20 @@
   });
 
   function startHeaderScroll(header) {
-    var compactOffset = 90;
+    var compactEnterOffset = 118;
+    var compactExitOffset = 54;
     var scrollFrame = null;
+    var isCompact = false;
 
     function updateHeaderState() {
-      var isCompact = window.scrollY > compactOffset;
+      var scrollY = window.scrollY;
+
+      if (!isCompact && scrollY > compactEnterOffset) {
+        isCompact = true;
+      } else if (isCompact && scrollY < compactExitOffset) {
+        isCompact = false;
+      }
+
       document.body.classList.toggle('header-compact', isCompact);
       header.setAttribute('data-compact', isCompact ? 'true' : 'false');
       scrollFrame = null;
@@ -75,6 +84,9 @@
     }
 
     updateHeaderState();
+    window.requestAnimationFrame(function () {
+      document.body.classList.add('header-ready');
+    });
     window.addEventListener('scroll', scheduleHeaderUpdate, { passive: true });
     window.addEventListener('resize', scheduleHeaderUpdate);
   }
