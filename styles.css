@@ -766,11 +766,14 @@ footer {
 }
 
 .home-hero {
+  --hero-edge-gutter: max(28px, calc((100vw - 1320px) / 2 + 28px));
   min-height: auto;
   display: grid;
   align-content: start;
   justify-items: center;
-  padding: 72px 28px 62px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  padding: 72px var(--hero-edge-gutter) 0;
   border: 0;
   border-radius: 0;
   background:
@@ -859,11 +862,13 @@ footer {
   --carousel-gap: 24px;
   position: relative;
   z-index: 2;
-  width: min(1220px, calc(100vw - 56px));
+  justify-self: center;
+  width: 100vw;
+  margin-left: calc(var(--hero-edge-gutter) * -1);
   margin-top: 58px;
   overflow: hidden;
-  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 13%, #000 87%, transparent 100%);
-  mask-image: linear-gradient(90deg, transparent 0, #000 13%, #000 87%, transparent 100%);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 18vw, #000 calc(100% - 18vw), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 18vw, #000 calc(100% - 18vw), transparent 100%);
 }
 
 .product-carousel::before,
@@ -873,20 +878,28 @@ footer {
   top: 0;
   bottom: 0;
   z-index: 3;
-  width: 15%;
+  width: clamp(220px, 28vw, 460px);
   pointer-events: none;
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
 }
 
 .product-carousel::before {
   left: 0;
-  background: linear-gradient(90deg, rgba(4, 10, 22, 0.9), rgba(4, 10, 22, 0));
+  -webkit-mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.72) 42%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0%, rgba(0, 0, 0, 0.72) 42%, transparent 100%);
+  background:
+    linear-gradient(90deg, rgba(3, 7, 16, 0.98) 0%, rgba(4, 12, 28, 0.76) 42%, rgba(4, 12, 28, 0) 100%),
+    radial-gradient(ellipse at 100% 50%, rgba(61, 184, 255, 0.18), transparent 72%);
 }
 
 .product-carousel::after {
   right: 0;
-  background: linear-gradient(270deg, rgba(4, 10, 22, 0.9), rgba(4, 10, 22, 0));
+  -webkit-mask-image: linear-gradient(270deg, #000 0%, rgba(0, 0, 0, 0.72) 42%, transparent 100%);
+  mask-image: linear-gradient(270deg, #000 0%, rgba(0, 0, 0, 0.72) 42%, transparent 100%);
+  background:
+    linear-gradient(270deg, rgba(3, 7, 16, 0.98) 0%, rgba(4, 12, 28, 0.76) 42%, rgba(4, 12, 28, 0) 100%),
+    radial-gradient(ellipse at 0% 50%, rgba(61, 184, 255, 0.18), transparent 72%);
 }
 
 .product-track {
@@ -1165,8 +1178,9 @@ footer {
   }
 
   .home-hero {
+    --hero-edge-gutter: 18px;
     min-height: auto;
-    padding: 58px 18px 54px;
+    padding: 58px var(--hero-edge-gutter) 0;
   }
 
   .home-hero h1 {
@@ -1181,7 +1195,7 @@ footer {
   }
 
   .product-carousel {
-    width: calc(100vw - 32px);
+    width: 100vw;
     margin-top: 48px;
   }
 
@@ -1238,8 +1252,9 @@ footer {
   }
 
   .home-hero {
+    --hero-edge-gutter: 16px;
     min-height: auto;
-    padding: 46px 16px 48px;
+    padding: 46px var(--hero-edge-gutter) 0;
   }
 
   .home-hero h1 {
@@ -1260,7 +1275,7 @@ footer {
   }
 
   .product-carousel {
-    width: calc(100vw - 24px);
+    width: 100vw;
     margin-top: 38px;
   }
 
