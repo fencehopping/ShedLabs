@@ -1,4 +1,6 @@
 (function () {
+  resetInitialScroll();
+
   var yearNode = document.getElementById('y');
   if (yearNode) {
     yearNode.textContent = new Date().getFullYear();
@@ -130,6 +132,42 @@
     });
     window.addEventListener('scroll', scheduleHeaderUpdate, { passive: true });
     window.addEventListener('resize', scheduleHeaderUpdate);
+  }
+
+  function resetInitialScroll() {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    if (window.location.hash) {
+      return;
+    }
+
+    function forceTop() {
+      window.scrollTo(0, 0);
+    }
+
+    function settleAtTop() {
+      var frameCount = 0;
+
+      forceTop();
+
+      function tick() {
+        forceTop();
+        frameCount += 1;
+
+        if (frameCount < 12) {
+          window.requestAnimationFrame(tick);
+        }
+      }
+
+      window.requestAnimationFrame(tick);
+      window.setTimeout(forceTop, 250);
+      window.setTimeout(forceTop, 600);
+    }
+
+    settleAtTop();
+    window.addEventListener('pageshow', settleAtTop);
   }
 
   function startCursorEffects() {
