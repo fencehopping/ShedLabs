@@ -758,7 +758,7 @@ footer {
 }
 
 .home-main {
-  overflow: hidden;
+  overflow: visible;
 }
 
 .home-main > section {
