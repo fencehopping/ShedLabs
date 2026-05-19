@@ -60,17 +60,58 @@
     var compactExitOffset = 54;
     var scrollFrame = null;
     var isCompact = false;
+    var animatedNodes = Array.prototype.slice.call(header.querySelectorAll('.brand, .nav'));
+
+    function animateHeaderShift(nextCompact) {
+      if (shouldReduceMotion || !animatedNodes.length) {
+        document.body.classList.toggle('header-compact', nextCompact);
+        return;
+      }
+
+      var beforeRects = animatedNodes.map(function (node) {
+        return node.getBoundingClientRect();
+      });
+
+      document.body.classList.toggle('header-compact', nextCompact);
+
+      animatedNodes.forEach(function (node, index) {
+        var afterRect = node.getBoundingClientRect();
+        var beforeRect = beforeRects[index];
+        var deltaX = beforeRect.left - afterRect.left;
+        var deltaY = beforeRect.top - afterRect.top;
+
+        if (Math.abs(deltaX) < 0.5 && Math.abs(deltaY) < 0.5) {
+          return;
+        }
+
+        node.animate(
+          [
+            { transform: 'translate3d(' + deltaX + 'px, ' + deltaY + 'px, 0)' },
+            { transform: 'translate3d(0, 0, 0)' }
+          ],
+          {
+            duration: 640,
+            easing: 'cubic-bezier(0.16, 1, 0.3, 1)'
+          }
+        );
+      });
+    }
 
     function updateHeaderState() {
       var scrollY = window.scrollY;
+      var nextCompact = isCompact;
 
       if (!isCompact && scrollY > compactEnterOffset) {
-        isCompact = true;
+        nextCompact = true;
       } else if (isCompact && scrollY < compactExitOffset) {
-        isCompact = false;
+        nextCompact = false;
       }
 
-      document.body.classList.toggle('header-compact', isCompact);
+      if (nextCompact !== isCompact) {
+        isCompact = nextCompact;
+        animateHeaderShift(isCompact);
+      }
+
       header.setAttribute('data-compact', isCompact ? 'true' : 'false');
       scrollFrame = null;
     }
