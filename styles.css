@@ -17,6 +17,7 @@
   --ring: rgba(120, 186, 255, 0.64);
   --logo-size: 240px;
   --logo-gap: 0;
+  --header-clearance: calc(var(--logo-size) + 96px);
   --mouse-x: 50vw;
   --mouse-y: 50vh;
 }
@@ -117,7 +118,7 @@ body::after {
   z-index: 1;
   max-width: 1320px;
   margin: 0 auto;
-  padding: 22px 28px 76px;
+  padding: var(--header-clearance) 28px 76px;
 }
 
 a {
@@ -1154,7 +1155,7 @@ footer {
 
 @media (max-width: 940px) {
   .wrap {
-    padding: 18px 16px 58px;
+    padding: var(--header-clearance) 16px 58px;
   }
 
   .card,
@@ -1257,6 +1258,7 @@ footer {
 @media (max-width: 640px) {
   :root {
     --logo-size: 200px;
+    --header-clearance: calc(var(--logo-size) + 78px);
   }
 
   .logo {
@@ -1264,7 +1266,7 @@ footer {
   }
 
   .wrap {
-    padding: 18px 16px 58px;
+    padding: var(--header-clearance) 16px 58px;
   }
 
   .hero,
