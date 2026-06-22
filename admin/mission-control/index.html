@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; block-all-mixed-content" />
+  <script>
+    if (location.protocol === "http:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <title>Shed Labs Mission Control</title>
+  <meta name="description" content="Private Shed Labs product metrics dashboard." />
+  <link rel="icon" href="/favicon.png" />
+  <link rel="apple-touch-icon" href="/favicon.png" />
+  <link rel="stylesheet" href="./mission-control.css" />
+</head>
+<body>
+  <main class="mission-shell" data-auth-state="locked">
+    <section class="lock-screen" data-lock-screen aria-labelledby="lock-title">
+      <div class="lock-panel">
+        <p class="eyebrow">Private admin</p>
+        <h1 id="lock-title">Shed Labs Mission Control</h1>
+        <p class="lock-copy">Access is limited to the Shed Labs owner account. This first pass uses mocked metrics and keeps provider keys out of the browser.</p>
+        <form class="admin-gate" data-admin-gate>
+          <label for="admin-email">Admin email</label>
+          <input id="admin-email" name="email" type="email" autocomplete="email" value="nickholroyd@gmail.com" required />
+          <button type="submit">Enter dashboard</button>
+          <p class="form-note" data-gate-message>Use nickholroyd@gmail.com for this private dashboard shell.</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="dashboard" data-dashboard hidden>
+      <header class="dashboard-header">
+        <div>
+          <p class="eyebrow">Shed Labs</p>
+          <h1>Mission Control</h1>
+          <p class="header-copy">Cross-product analytics shell for traffic, store funnel, events, and source health.</p>
+        </div>
+        <div class="header-actions">
+          <a href="/" aria-label="Return to Shed Labs home">Home</a>
+          <button type="button" data-lock-button>Lock</button>
+        </div>
+      </header>
+
+      <section class="control-bar" aria-label="Dashboard filters">
+        <label>
+          <span>Project</span>
+          <select data-project-select></select>
+        </label>
+        <fieldset>
+          <legend>Date range</legend>
+          <div class="range-group" data-range-group>
+            <button type="button" data-range="today">Today</button>
+            <button type="button" data-range="7d" class="is-active">7 days</button>
+            <button type="button" data-range="30d">30 days</button>
+          </div>
+        </fieldset>
+      </section>
+
+      <section class="summary-grid" data-summary-grid aria-label="Top metrics"></section>
+
+      <section class="dashboard-grid">
+        <article class="panel chart-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Traffic</p>
+              <h2>Active users</h2>
+            </div>
+            <span data-chart-total></span>
+          </div>
+          <div class="line-chart" data-traffic-chart aria-label="Traffic chart"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">App Store</p>
+              <h2>Funnel</h2>
+            </div>
+          </div>
+          <div class="funnel-list" data-funnel-list></div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid dashboard-grid-wide">
+        <article class="panel events-panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Product</p>
+              <h2>Recent events</h2>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Event</th>
+                  <th>Source</th>
+                  <th>Count</th>
+                  <th>Window</th>
+                </tr>
+              </thead>
+              <tbody data-events-table></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="panel-kicker">Integrations</p>
+              <h2>Source health</h2>
+            </div>
+          </div>
+          <div class="source-list" data-source-list></div>
+        </article>
+      </section>
+    </section>
+  </main>
+
+  <script type="module" src="./mission-control.js"></script>
+</body>
+</html>
