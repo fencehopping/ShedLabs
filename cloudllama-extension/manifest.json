@@ -1,0 +1,30 @@
+{
+  "manifest_version": 3,
+  "name": "Cloud Llama",
+  "version": "0.3.0",
+  "description": "A retro desktop-style player for your SoundCloud likes.",
+  "permissions": ["storage", "identity"],
+  "host_permissions": [
+    "https://shedlabs.onrender.com/*",
+    "https://*.sndcdn.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "Open Cloud Llama",
+    "default_popup": "player.html",
+    "default_icon": {
+      "16": "assets/icon16.png",
+      "32": "assets/icon32.png",
+      "48": "assets/icon48.png",
+      "128": "assets/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon16.png",
+    "32": "assets/icon32.png",
+    "48": "assets/icon48.png",
+    "128": "assets/icon128.png"
+  }
+}
