@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests; block-all-mixed-content" />
+  <script>
+    if (location.protocol === "http:" && location.hostname !== "localhost" && location.hostname !== "127.0.0.1") {
+      location.replace("https://" + location.host + location.pathname + location.search + location.hash);
+    }
+  </script>
+  <title>Cloud Llama Privacy Policy | Shed Design Labs</title>
+  <meta name="description" content="Privacy Policy for the Cloud Llama Chrome extension and its SoundCloud integration." />
+  <meta property="og:title" content="Cloud Llama Privacy Policy" />
+  <meta property="og:description" content="How Cloud Llama handles SoundCloud account data, liked-track metadata, authentication, and local settings." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="/assets/images/CloudLlama.png" />
+  <link rel="apple-touch-icon" href="/assets/images/CloudLlama.png" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <a class="skip-link" href="#content">Skip to content</a>
+  <header class="topbar">
+    <div class="brand-stack">
+      <a class="brand" href="/" aria-label="Shed Design Labs home">
+        <img src="/newlogo.png" alt="Shed Design Labs logo" class="logo" />
+      </a>
+      <nav class="nav" aria-label="Primary">
+        <a class="nav-link" href="/services">Services</a>
+        <a class="nav-link" href="/work">Work</a>
+        <a class="nav-link" href="/cloudllama" aria-current="page">Cloud Llama</a>
+        <a class="nav-link" href="/about">About</a>
+        <a class="nav-link" href="/contact">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <main id="content">
+      <section class="hero" aria-labelledby="privacy-heading">
+        <p class="eyebrow">Cloud Llama</p>
+        <h1 id="privacy-heading">Privacy Policy</h1>
+        <p class="lead">Effective Date: August 19, 2026</p>
+      </section>
+
+      <section class="panel legal-content" aria-labelledby="privacy-overview-heading">
+        <h2 id="privacy-overview-heading">Overview</h2>
+        <p>Cloud Llama is a Chrome extension operated by Shed Design Labs. It connects to SoundCloud at your request, loads your liked tracks, and plays supported tracks in a retro music-player interface.</p>
+        <p>This policy applies to the Cloud Llama extension, the Cloud Llama pages on shedlabs.studio, and the supporting authentication and playback service.</p>
+
+        <h2>Information Cloud Llama handles</h2>
+        <p>When you connect SoundCloud, Cloud Llama may process:</p>
+        <ul>
+          <li>Your SoundCloud username, user identifier, profile link, and basic profile information.</li>
+          <li>Metadata for tracks you have liked, including track and creator names, duration, availability, artwork or links, and stream information supplied by SoundCloud.</li>
+          <li>SoundCloud OAuth access and refresh tokens, encrypted or otherwise protected and used only to provide the connection you requested.</li>
+          <li>An opaque Cloud Llama session identifier and local preferences such as volume and player settings.</li>
+          <li>Limited technical information needed to diagnose failures, such as request status codes and service errors. Cloud Llama does not intentionally log OAuth tokens or signed playback URLs.</li>
+        </ul>
+
+        <h2>Information Cloud Llama does not collect</h2>
+        <p>Cloud Llama does not read your general browsing history, the contents of unrelated webpages, passwords, personal messages, contacts, financial information, or precise location. It does not sell personal information or use it for advertising.</p>
+
+        <h2>How information is used</h2>
+        <p>Information is used only to authenticate your SoundCloud connection, retrieve your liked tracks, resolve supported playback streams, remember player settings, secure the service, and troubleshoot errors.</p>
+
+        <h2>Chrome Web Store Limited Use</h2>
+        <p>Cloud Llama's use and transfer of information complies with the Chrome Web Store User Data Policy, including its Limited Use requirements. Information is used only to provide or improve Cloud Llama's user-facing playback features, and is not used for personalized advertising, sold to data brokers, or made available for humans to read except with the user's affirmative consent, for security purposes, to comply with applicable law, or after aggregation and anonymization for internal operations.</p>
+
+        <h2>Storage and retention</h2>
+        <p>Player preferences and an opaque session identifier may be stored in Chrome’s extension storage on your device. SoundCloud tokens are processed by Cloud Llama’s supporting service and are not placed in the distributed extension code.</p>
+        <p>Cloud Llama sessions are designed to expire within 30 days of creation. Short-lived authentication state and playback tickets expire sooner. Local preferences remain until you disconnect, clear extension data, or uninstall the extension. Operational records may be retained only as long as reasonably necessary for security and troubleshooting.</p>
+
+        <h2>Sharing and service providers</h2>
+        <p>Cloud Llama communicates with SoundCloud to provide the features you request. Infrastructure providers may process limited data solely to host and secure the supporting service. We do not sell data or share it with data brokers, advertisers, or unrelated third parties.</p>
+        <p>SoundCloud is an independent service. Its handling of information is governed by its own terms and privacy policy.</p>
+
+        <h2>Security</h2>
+        <p>Cloud Llama uses encrypted network connections for production service traffic, keeps the SoundCloud Client Secret out of the extension package, restricts access to the supporting service, and limits stored data to what is needed for the player. No system can guarantee absolute security.</p>
+
+        <h2>Your choices and deletion</h2>
+        <p>You may disconnect SoundCloud from inside Cloud Llama to end the local session. You may also remove locally stored settings by uninstalling the extension or clearing its data. To request deletion of information retained by the supporting service, contact Shed Design Labs through the <a href="/contact">contact page</a>.</p>
+
+        <h2>Children</h2>
+        <p>Cloud Llama is not directed to children under 13, and we do not knowingly collect personal information from children under 13.</p>
+
+        <h2>Changes to this policy</h2>
+        <p>We may update this policy as Cloud Llama changes. The effective date above will be revised when material updates are published.</p>
+
+        <h2>Contact</h2>
+        <p>For privacy questions or data requests, contact Shed Design Labs through our <a href="/contact">contact page</a>.</p>
+      </section>
+    </main>
+
+    <footer>
+      <span>© <span id="y"></span> Shed Design Labs</span>
+      <span class="footer-links">
+        <a href="/cloudllama">Cloud Llama</a>
+        <a href="/cloudllama/privacy">Cloud Llama Privacy</a>
+        <a href="/privacy-policy">Privacy Policy</a>
+      </span>
+    </footer>
+  </div>
+  <script src="/site.js" defer></script>
+</body>
+</html>

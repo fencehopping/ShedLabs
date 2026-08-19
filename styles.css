@@ -1374,3 +1374,292 @@ footer {
     transform: none;
   }
 }
+
+/* Cloud Llama product page */
+.cloudllama-page {
+  background:
+    radial-gradient(900px 620px at 88% 18%, rgba(0, 255, 91, 0.12), transparent 62%),
+    radial-gradient(800px 560px at 8% 42%, rgba(245, 177, 42, 0.11), transparent 64%),
+    linear-gradient(180deg, #050812 0%, #0b1023 48%, #060b15 100%);
+}
+
+.cloudllama-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(400px, 0.85fr);
+  align-items: center;
+  gap: clamp(42px, 7vw, 92px);
+  min-height: 620px;
+  padding: 40px 0 86px;
+}
+
+.cloudllama-copy h1 {
+  max-width: 760px;
+  margin: 14px 0 24px;
+  font-size: clamp(3rem, 6vw, 5.9rem);
+  line-height: 0.97;
+  letter-spacing: -0.065em;
+}
+
+.cloudllama-copy h1 span {
+  color: #a8ffbd;
+  text-shadow: 0 0 34px rgba(0, 255, 91, 0.22);
+}
+
+.cloudllama-copy .lead {
+  max-width: 680px;
+}
+
+.cloudllama-status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 0;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cloudllama-status span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #00f04f;
+  box-shadow: 0 0 14px rgba(0, 240, 79, 0.82);
+  animation: llama-pulse 1.8s ease-in-out infinite;
+}
+
+.cloudllama-demo {
+  position: relative;
+  width: min(100%, 520px);
+  justify-self: end;
+  padding: 12px;
+  border: 2px solid #7b7c97;
+  border-radius: 6px;
+  color: #e8e8df;
+  background: linear-gradient(135deg, #3b3b59, #1d1e35 54%, #32344d);
+  box-shadow:
+    inset 1px 1px 0 #b7b8c8,
+    inset -2px -2px 0 #111220,
+    0 34px 82px rgba(0, 0, 0, 0.48),
+    0 0 58px rgba(0, 255, 91, 0.06);
+  font-family: "Courier New", monospace;
+}
+
+.cloudllama-demo::after {
+  content: "PRIVATE BETA";
+  position: absolute;
+  right: 18px;
+  bottom: -12px;
+  padding: 4px 9px;
+  border: 1px solid #dfc56f;
+  color: #19170e;
+  background: #d9c581;
+  font: 800 0.6rem/1 "Montserrat", sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.llama-titlebar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  color: #d2d2df;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.llama-titlebar span {
+  height: 8px;
+  border-top: 2px solid #b9b08b;
+  border-bottom: 2px solid #5e5b46;
+  background: #87816a;
+}
+
+.llama-display {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 12px;
+  min-height: 162px;
+  padding: 10px;
+  border: 3px ridge #85869a;
+  background: #020504;
+  overflow: hidden;
+}
+
+.llama-display img {
+  align-self: end;
+  width: 145px;
+  height: 145px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgba(245, 189, 73, 0.18));
+}
+
+.llama-readout {
+  display: grid;
+  align-content: center;
+  min-width: 0;
+  color: #00f34f;
+}
+
+.llama-readout > span {
+  color: #819183;
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+}
+
+.llama-readout > strong {
+  overflow: hidden;
+  margin: 5px 0 16px;
+  font-size: clamp(0.75rem, 1.5vw, 1rem);
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(0, 255, 72, 0.44);
+}
+
+.llama-spectrum {
+  display: flex;
+  align-items: end;
+  gap: 4px;
+  height: 44px;
+  border-bottom: 1px solid rgba(0, 255, 72, 0.32);
+}
+
+.llama-spectrum i {
+  width: 7%;
+  min-height: 8px;
+  background: linear-gradient(180deg, #ff315b 0 14%, #f5b82e 14% 35%, #00ef4f 35%);
+  box-shadow: 0 0 5px rgba(0, 239, 79, 0.35);
+  animation: llama-bars 1.15s ease-in-out infinite alternate;
+}
+
+.llama-spectrum i:nth-child(2n) { height: 72%; animation-delay: -0.35s; }
+.llama-spectrum i:nth-child(3n) { height: 94%; animation-delay: -0.7s; }
+.llama-spectrum i:nth-child(4n) { height: 46%; animation-delay: -0.2s; }
+.llama-spectrum i:nth-child(5n) { height: 82%; animation-delay: -0.9s; }
+
+.llama-controls {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 14px 5px 10px;
+}
+
+.llama-controls b,
+.llama-controls em {
+  display: grid;
+  place-items: center;
+  min-width: 40px;
+  height: 36px;
+  border: 2px outset #dce6e9;
+  color: #53636a;
+  background: linear-gradient(135deg, #f1f7f5, #a4b2b6);
+  font-size: 0.8rem;
+  font-style: normal;
+  box-shadow: 2px 2px 0 #0c0d16;
+}
+
+.llama-controls em {
+  min-width: 48px;
+  margin-left: auto;
+  letter-spacing: 0.08em;
+}
+
+.llama-controls em + em {
+  margin-left: 0;
+}
+
+.llama-visualizer {
+  display: grid;
+  place-items: center;
+  height: 88px;
+  border: 3px ridge #85869a;
+  background:
+    radial-gradient(circle, rgba(255, 255, 255, 0.86) 0 1px, transparent 2px),
+    repeating-radial-gradient(ellipse at center, rgba(0, 255, 105, 0.18) 0 3px, transparent 5px 10px),
+    conic-gradient(from 30deg, #000 0 13%, #071b15 18%, #0d0820 30%, #000 42% 55%, #123322 68%, #10081f 82%, #000);
+  background-size: 19px 19px, auto, auto;
+  overflow: hidden;
+}
+
+.llama-visualizer span {
+  width: 150px;
+  height: 150px;
+  border-radius: 48% 52% 44% 56%;
+  background: conic-gradient(from 90deg, transparent, rgba(0, 255, 100, 0.5), transparent 36%, rgba(165, 55, 255, 0.55), transparent 72%);
+  filter: blur(3px);
+  animation: llama-spin 6s linear infinite;
+}
+
+.cloudllama-features {
+  padding-top: 92px;
+}
+
+.cloudllama-features .service-tile {
+  border-top: 1px solid rgba(0, 255, 91, 0.22);
+}
+
+@keyframes llama-pulse {
+  50% { opacity: 0.46; transform: scale(0.78); }
+}
+
+@keyframes llama-bars {
+  from { height: 18%; }
+  to { height: 100%; }
+}
+
+@keyframes llama-spin {
+  to { transform: rotate(360deg) scale(1.1); }
+}
+
+@media (max-width: 940px) {
+  .cloudllama-hero {
+    grid-template-columns: 1fr;
+    min-height: 0;
+    padding-top: 52px;
+  }
+
+  .cloudllama-demo {
+    width: min(100%, 620px);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 640px) {
+  .cloudllama-hero {
+    gap: 38px;
+    padding: 36px 0 62px;
+  }
+
+  .cloudllama-copy h1 {
+    font-size: clamp(2.6rem, 13vw, 3.75rem);
+  }
+
+  .llama-display {
+    grid-template-columns: 98px minmax(0, 1fr);
+    min-height: 118px;
+  }
+
+  .llama-display img {
+    width: 98px;
+    height: 98px;
+  }
+
+  .llama-controls b {
+    min-width: 34px;
+  }
+
+  .llama-controls em {
+    min-width: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cloudllama-status span,
+  .llama-spectrum i,
+  .llama-visualizer span {
+    animation: none;
+  }
+}

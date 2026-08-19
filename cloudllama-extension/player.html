@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <title>Cloud Llama</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="Cloud Llama SoundCloud player">
+      <section class="winamp-window player-window" aria-label="Audio player">
+        <header class="titlebar">
+          <img class="tiny-mark" src="assets/figma/winamp-mark.svg" alt="" />
+          <span class="title-rail" aria-hidden="true"></span>
+          <h1>CLOUD LLAMA</h1>
+          <span class="title-rail" aria-hidden="true"></span>
+          <button class="window-button minimize" type="button" aria-label="Minimize player"></button>
+          <button class="window-button close" type="button" aria-label="Close player"></button>
+        </header>
+
+        <div class="controller-panel">
+          <div class="controller-inner">
+            <section class="display-bank" aria-label="Playback display">
+              <div class="time-visualizer">
+                <div class="status-column" aria-hidden="true">
+                  <span>A</span><span>U</span><span>D</span><span>I</span><span>O</span>
+                </div>
+                <div class="play-indicator" id="playIndicator" aria-hidden="true"></div>
+                <div class="digital-time" id="elapsedTime">00:00</div>
+                <div class="visualizer" id="visualizer" aria-hidden="true"></div>
+              </div>
+
+              <div class="track-readout">
+                <a id="trackLink" class="track-title" href="https://soundcloud.com" target="_blank" rel="noreferrer">CLOUD LLAMA READY — CONNECT SOUNDCLOUD</a>
+                <div class="codec-row">
+                  <span class="codec-number" id="bitrate">128</span><span>kbps</span>
+                  <span class="codec-number" id="sampleRate">44</span><span>kHz</span>
+                  <span class="channel muted">mono</span><span class="channel active">stereo</span>
+                </div>
+                <div class="mix-row">
+                  <label class="slider-wrap" aria-label="Volume">
+                    <span class="slider-track slider-track--red"><input id="volume" type="range" min="0" max="100" value="82" /></span>
+                  </label>
+                  <label class="slider-wrap" aria-label="Stereo balance">
+                    <span class="slider-track slider-track--green"><input id="balance" type="range" min="-1" max="1" step="0.05" value="0" /></span>
+                  </label>
+                  <button id="eqButton" class="mini-button" type="button" aria-pressed="false" aria-controls="equalizerWindow"><i></i>EQ</button>
+                  <button id="visualizerButton" class="mini-button" type="button" aria-pressed="false" aria-controls="geissWindow"><i></i>VIZ</button>
+                </div>
+              </div>
+            </section>
+
+            <label class="seek-row" aria-label="Track position">
+              <input id="seek" type="range" min="0" max="1000" value="0" />
+            </label>
+
+            <nav class="transport-row" aria-label="Playback controls">
+              <div class="transport-group">
+                <button class="transport-button previous" id="previousButton" type="button" aria-label="Previous track"><span></span></button>
+                <button class="transport-button play" id="playButton" type="button" aria-label="Play"><span></span></button>
+                <button class="transport-button pause" id="pauseButton" type="button" aria-label="Pause"><span></span></button>
+                <button class="transport-button stop" id="stopButton" type="button" aria-label="Stop"><span></span></button>
+                <button class="transport-button next" id="nextButton" type="button" aria-label="Next track"><span></span></button>
+                <button class="transport-button eject" id="settingsButton" type="button" aria-label="SoundCloud settings"><span></span></button>
+              </div>
+              <div class="mode-group">
+                <button class="mode-button active" id="shuffleButton" type="button" aria-pressed="true"><i></i>SHUFFLE</button>
+                <button class="mode-button" id="repeatButton" type="button" aria-pressed="false"><i></i>↻</button>
+              </div>
+              <img class="lightning-logo" src="assets/cloud-llama.png" alt="Cloud Llama" />
+            </nav>
+          </div>
+        </div>
+      </section>
+
+      <section class="winamp-window equalizer-window" id="equalizerWindow" aria-label="Cloud Llama equalizer" hidden>
+        <header class="titlebar equalizer-titlebar">
+          <span class="title-rail" aria-hidden="true"></span>
+          <h2>CLOUD LLAMA EQUALIZER</h2>
+          <span class="title-rail" aria-hidden="true"></span>
+          <button class="window-button close" id="closeEqualizerButton" type="button" aria-label="Close equalizer"></button>
+        </header>
+        <div class="equalizer-panel">
+          <div class="equalizer-toolbar">
+            <button class="eq-chrome-button" id="eqOnButton" type="button" aria-pressed="false"><i></i>ON</button>
+            <button class="eq-chrome-button" id="eqAutoButton" type="button" aria-pressed="false"><i></i>AUTO</button>
+            <svg class="eq-curve" viewBox="0 0 280 38" role="img" aria-label="Equalizer response curve">
+              <polyline id="eqCurveLine" points="0,19 280,19"></polyline>
+            </svg>
+            <button class="eq-chrome-button eq-presets-button" id="eqPresetsButton" type="button">PRESETS</button>
+          </div>
+          <div class="eq-faders" id="eqFaders"></div>
+        </div>
+      </section>
+
+      <section class="winamp-window geiss-window" id="geissWindow" aria-label="Geiss visualizer" hidden>
+        <header class="titlebar geiss-titlebar">
+          <img class="tiny-mark" src="assets/cloud-llama.png" alt="" />
+          <span class="title-rail" aria-hidden="true"></span>
+          <h2>GEISS VISUALIZER</h2>
+          <span class="title-rail" aria-hidden="true"></span>
+          <button class="window-button close" id="closeGeissButton" type="button" aria-label="Close visualizer"></button>
+        </header>
+        <div class="geiss-toolbar">
+          <span>GEISS // CLOUD LLAMA AUDIO REACTOR</span>
+          <button class="footer-button geiss-fullscreen-button" id="geissFullscreenButton" type="button">FULLSCREEN</button>
+        </div>
+        <div class="geiss-stage" id="geissStage">
+          <canvas id="geissCanvas" aria-label="Audio-reactive Geiss-style visualization"></canvas>
+          <div class="geiss-scanlines" aria-hidden="true"></div>
+          <div class="geiss-hud" aria-hidden="true">
+            <span id="geissPreset">PRESET 01 · VORTEX BLOOM</span>
+            <span id="geissFps">60 FPS</span>
+          </div>
+        </div>
+        <footer class="geiss-footer">
+          <span id="geissTrack">CLOUD LLAMA READY</span>
+          <span>ESC: EXIT FULLSCREEN</span>
+        </footer>
+      </section>
+
+      <section class="winamp-window playlist-window" id="playlistWindow" aria-label="SoundCloud likes playlist">
+        <header class="titlebar playlist-titlebar">
+          <span class="title-rail" aria-hidden="true"></span>
+          <h2>CLOUD LLAMA LIKES</h2>
+          <span class="title-rail" aria-hidden="true"></span>
+        </header>
+        <div class="playlist-panel">
+          <div class="playlist-inner">
+            <ol class="track-list" id="trackList" aria-label="Liked tracks"></ol>
+            <div class="playlist-empty" id="playlistEmpty">
+              <span id="playlistEmptyMessage">CONNECT YOUR SOUNDCLOUD LIKES</span>
+              <button class="dialog-button playlist-sync-button" id="syncSoundCloudButton" type="button">SYNC WITH SOUNDCLOUD</button>
+            </div>
+            <div class="fake-scrollbar" aria-hidden="true"><span id="scrollThumb"></span></div>
+          </div>
+          <footer class="playlist-footer">
+            <button class="footer-button" id="refreshButton" type="button">SYNC</button>
+            <button class="footer-button" id="clearButton" type="button">CLR</button>
+            <button class="footer-button" id="selectButton" type="button">SEL</button>
+            <button class="footer-button" id="moreButton" type="button">MORE</button>
+            <div class="playlist-status">
+              <a class="soundcloud-credit" href="https://soundcloud.com" target="_blank" rel="noreferrer" aria-label="SoundCloud">
+                <img src="assets/soundcloud-logo-white.png" alt="SoundCloud" />
+              </a>
+              <span id="playlistCount">0 LIKES</span>
+              <span id="totalDuration">00:00:00</span>
+            </div>
+            <button class="footer-button list-button" id="settingsFooterButton" type="button">LIST<br />OPTS</button>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <dialog id="settingsDialog" class="settings-dialog">
+      <form id="settingsForm" method="dialog">
+        <header>
+          <img src="assets/cloud-llama.png" alt="" />
+          <div><strong>SOUNDCLOUD CONNECTION</strong><span>Load your real liked tracks</span></div>
+          <button class="dialog-close" value="cancel" aria-label="Close settings">×</button>
+        </header>
+        <p>Connect securely through Cloud Llama. SoundCloud authorization is handled by the production service, and your SoundCloud password and the app's Client Secret never enter the extension.</p>
+        <button id="connectButton" class="dialog-button connect-button" type="button">Connect to SoundCloud</button>
+        <div class="connection-state" id="connectionState" role="status">Not connected</div>
+        <footer>
+          <button id="disconnectButton" class="dialog-button secondary" type="button">Disconnect</button>
+          <button class="dialog-button" value="close" type="submit">Save &amp; close</button>
+        </footer>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
+    <script src="vendor/hls.min.js"></script>
+    <script src="player.js"></script>
+  </body>
+</html>
