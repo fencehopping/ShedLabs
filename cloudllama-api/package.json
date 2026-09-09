@@ -1,6 +1,6 @@
 {
   "name": "cloud-llama-api",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "OAuth and playback service for the Cloud Llama Chrome extension",
   "scripts": {

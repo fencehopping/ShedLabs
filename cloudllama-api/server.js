@@ -7,9 +7,13 @@ const { Readable } = require("node:stream");
 const SOUNDCLOUD_API = "https://api.soundcloud.com";
 const SOUNDCLOUD_AUTH = "https://secure.soundcloud.com";
 const OAUTH_ATTEMPT_TTL_MS = 10 * 60 * 1000;
-const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+const SESSION_TTL_MS = 365 * 24 * 60 * 60 * 1000;
 const MEDIA_TICKET_TTL_MS = 2 * 60 * 60 * 1000;
 const REFRESH_EARLY_MS = 60 * 1000;
+const SESSION_TOKEN_VERSION = "v1";
+const SESSION_TOKEN_CONTEXT = "cloud-llama-session-v1";
+const STATION_EPOCH_MS = Date.UTC(2026, 0, 1);
+const STATION_FALLBACK_CACHE_MS = 5 * 60 * 1000;
 
 function loadEnv(filePath = path.join(__dirname, ".env")) {
   if (!fs.existsSync(filePath)) return;
@@ -39,17 +43,64 @@ const config = {
   redirectUri: process.env.SOUNDCLOUD_REDIRECT_URI || (renderExternalUrl
     ? `${renderExternalUrl}/auth/soundcloud/callback`
     : "http://127.0.0.1:8787/auth/soundcloud/callback"),
+  djProfileUrl: process.env.CLOUD_LLAMA_DJ_PROFILE_URL || "https://soundcloud.com/jgilla-1",
+  stationFallbackUrl: process.env.CLOUD_LLAMA_STATION_FALLBACK_URL || "https://soundcloud.com/thesoundoftrees/likes",
   host: process.env.CHROMEAMP_SERVER_HOST || (process.env.RENDER ? "0.0.0.0" : "127.0.0.1"),
   port: Number(process.env.CHROMEAMP_SERVER_PORT || process.env.PORT || 8787)
 };
 
 const oauthAttempts = new Map();
 const oauthClaims = new Map();
-const sessions = new Map();
 const mediaTickets = new Map();
+const station = {
+  fallbackTracks: [],
+  fallbackLoad: null,
+  fallbackLoadedAt: 0,
+  liveTrack: null,
+  liveStartedAt: 0,
+  liveDj: null,
+  revision: 0
+};
 
 function randomToken(bytes = 32) {
   return crypto.randomBytes(bytes).toString("base64url");
+}
+
+function sessionEncryptionKey() {
+  if (!config.clientSecret) throw new Error("SoundCloud credentials are not configured");
+  return crypto.createHash("sha256").update(`${SESSION_TOKEN_CONTEXT}\0${config.clientSecret}`).digest();
+}
+
+function sealSession(session) {
+  const iv = crypto.randomBytes(12);
+  const cipher = crypto.createCipheriv("aes-256-gcm", sessionEncryptionKey(), iv);
+  cipher.setAAD(Buffer.from(SESSION_TOKEN_CONTEXT));
+  const encrypted = Buffer.concat([
+    cipher.update(JSON.stringify(session), "utf8"),
+    cipher.final()
+  ]);
+  const tag = cipher.getAuthTag();
+  return [SESSION_TOKEN_VERSION, iv.toString("base64url"), encrypted.toString("base64url"), tag.toString("base64url")].join(".");
+}
+
+function openSession(token) {
+  try {
+    const [version, encodedIv, encodedPayload, encodedTag, extra] = String(token || "").split(".");
+    if (version !== SESSION_TOKEN_VERSION || !encodedIv || !encodedPayload || !encodedTag || extra) return null;
+    const decipher = crypto.createDecipheriv("aes-256-gcm", sessionEncryptionKey(), Buffer.from(encodedIv, "base64url"));
+    decipher.setAAD(Buffer.from(SESSION_TOKEN_CONTEXT));
+    decipher.setAuthTag(Buffer.from(encodedTag, "base64url"));
+    const payload = Buffer.concat([
+      decipher.update(Buffer.from(encodedPayload, "base64url")),
+      decipher.final()
+    ]).toString("utf8");
+    const session = JSON.parse(payload);
+    if (!session || typeof session.accessToken !== "string" || typeof session.tokenExpiresAt !== "number"
+      || typeof session.sessionExpiresAt !== "number" || session.sessionExpiresAt <= Date.now()) return null;
+    return session;
+  } catch {
+    return null;
+  }
 }
 
 function createPkceChallenge(verifier) {
@@ -71,6 +122,7 @@ function applyCors(req, res) {
   const origin = allowedOrigin(req.headers.origin);
   if (origin) res.setHeader("Access-Control-Allow-Origin", origin);
   res.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type");
+  res.setHeader("Access-Control-Expose-Headers", "X-Cloud-Llama-Session");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
   res.setHeader("Vary", "Origin");
 }
@@ -131,14 +183,18 @@ function bearerToken(req) {
 
 function requireSession(req, res) {
   const id = bearerToken(req);
-  const session = sessions.get(id);
-  if (!id || !session || session.sessionExpiresAt <= Date.now()) {
-    if (id) sessions.delete(id);
+  const session = openSession(id);
+  if (!id || !session) {
     sendError(res, 401, "Cloud Llama session is missing or expired");
     return null;
   }
   session.lastSeenAt = Date.now();
-  return { id, session };
+  session.sessionExpiresAt = Date.now() + SESSION_TTL_MS;
+  return { session };
+}
+
+function attachUpdatedSession(res, session) {
+  res.setHeader("X-Cloud-Llama-Session", sealSession(session));
 }
 
 async function tokenRequest(parameters) {
@@ -198,6 +254,221 @@ function validateSoundCloudUrl(value) {
   } catch {
     return false;
   }
+}
+
+function canonicalSoundCloudUrl(value) {
+  try {
+    const parsed = new URL(value);
+    if (parsed.protocol !== "https:" || (parsed.hostname !== "soundcloud.com" && !parsed.hostname.endsWith(".soundcloud.com"))) return "";
+    const pathname = parsed.pathname.replace(/\/+$/, "") || "/";
+    return `https://soundcloud.com${pathname}`.toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function normalizeStationTrack(raw) {
+  const track = raw?.track || raw || {};
+  const id = String(track.urn || track.id || "");
+  if (!id) return null;
+  return {
+    ...track,
+    id,
+    artist: track.metadata_artist || track.publisher_metadata?.artist || track.user?.username || "Unknown artist",
+    title: track.title || "Untitled",
+    duration: Math.max(0, Number(track.duration || track.full_duration || 0)),
+    permalink_url: track.permalink_url || "https://soundcloud.com",
+    access: track.access || (track.streamable === false ? "blocked" : "playable")
+  };
+}
+
+async function readJsonBody(req, limit = 16_384) {
+  const chunks = [];
+  let length = 0;
+  for await (const chunk of req) {
+    length += chunk.length;
+    if (length > limit) {
+      const error = new Error("Request body is too large");
+      error.status = 413;
+      throw error;
+    }
+    chunks.push(chunk);
+  }
+  if (!chunks.length) return {};
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  } catch {
+    const error = new Error("Request body must be valid JSON");
+    error.status = 400;
+    throw error;
+  }
+}
+
+async function soundCloudJson(session, url, fallbackMessage) {
+  const response = await soundCloudFetch(session, url);
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const error = new Error(payload.errors?.[0]?.error_message || payload.error || fallbackMessage);
+    error.status = response.status;
+    throw error;
+  }
+  return payload;
+}
+
+async function fetchSoundCloudCollection(session, firstUrl) {
+  const collection = [];
+  let nextUrl = firstUrl;
+  let page = 0;
+  while (nextUrl && page < 5) {
+    if (!validateSoundCloudUrl(nextUrl)) throw new Error("SoundCloud returned an invalid pagination URL");
+    const payload = await soundCloudJson(session, nextUrl, "Could not load the SoundCloud collection");
+    collection.push(...(Array.isArray(payload) ? payload : payload.collection || []));
+    nextUrl = Array.isArray(payload) ? "" : payload.next_href || "";
+    page += 1;
+  }
+  return collection;
+}
+
+async function resolveSoundCloudResource(session, resourceUrl) {
+  const canonicalUrl = canonicalSoundCloudUrl(resourceUrl);
+  if (!canonicalUrl) {
+    const error = new Error("A valid SoundCloud URL is required");
+    error.status = 400;
+    throw error;
+  }
+  // SoundCloud's resolver expects the owning profile for a public /likes page.
+  // The collection itself is fetched explicitly from /users/{id}/likes/tracks.
+  const resolvableUrl = canonicalUrl.replace(/\/likes$/, "");
+  return soundCloudJson(
+    session,
+    `${SOUNDCLOUD_API}/resolve?url=${encodeURIComponent(resolvableUrl)}`,
+    "Could not resolve the SoundCloud URL"
+  );
+}
+
+async function loadStationFallback(session) {
+  if (station.fallbackTracks.length && Date.now() - station.fallbackLoadedAt < STATION_FALLBACK_CACHE_MS) {
+    return station.fallbackTracks;
+  }
+  if (!station.fallbackLoad) {
+    station.fallbackLoad = (async () => {
+      const resource = await resolveSoundCloudResource(session, config.stationFallbackUrl);
+      const identifier = encodeURIComponent(resource.urn || resource.id || "");
+      let rawTracks;
+      if (resource.kind === "playlist" || resource.kind === "system-playlist") {
+        rawTracks = await fetchSoundCloudCollection(
+          session,
+          `${SOUNDCLOUD_API}/playlists/${identifier}/tracks?limit=200&linked_partitioning=true`
+        );
+      } else if (resource.kind === "user") {
+        rawTracks = await fetchSoundCloudCollection(
+          session,
+          `${SOUNDCLOUD_API}/users/${identifier}/likes/tracks?access=playable&limit=200&linked_partitioning=true`
+        );
+        if (!rawTracks.length) {
+          rawTracks = await fetchSoundCloudCollection(
+            session,
+            `${SOUNDCLOUD_API}/users/${identifier}/tracks?access=playable&limit=200&linked_partitioning=true`
+          );
+        }
+      } else {
+        rawTracks = [resource];
+      }
+      const tracks = rawTracks
+        .map(normalizeStationTrack)
+        .filter((track) => track && track.access !== "blocked" && track.duration > 0);
+      if (!tracks.length) throw new Error("The default SoundCloud source has no playable public tracks");
+      station.fallbackTracks = tracks;
+      station.fallbackLoadedAt = Date.now();
+      station.revision += 1;
+      return tracks;
+    })().finally(() => {
+      station.fallbackLoad = null;
+    });
+  }
+  return station.fallbackLoad;
+}
+
+function automaticStationPosition(tracks, now = Date.now()) {
+  const durations = tracks.map((track) => Math.max(1, Number(track.duration) || 0));
+  const totalDuration = durations.reduce((sum, duration) => sum + duration, 0);
+  if (!tracks.length || !totalDuration) return { index: -1, positionMs: 0 };
+  let cursor = ((now - STATION_EPOCH_MS) % totalDuration + totalDuration) % totalDuration;
+  for (let index = 0; index < tracks.length; index += 1) {
+    if (cursor < durations[index]) return { index, positionMs: cursor };
+    cursor -= durations[index];
+  }
+  return { index: 0, positionMs: 0 };
+}
+
+function isStationDj(session) {
+  return canonicalSoundCloudUrl(session?.profile?.permalink_url) === canonicalSoundCloudUrl(config.djProfileUrl);
+}
+
+async function stationSnapshot(session, now = Date.now()) {
+  const fallbackTracks = await loadStationFallback(session);
+  const liveElapsed = Math.max(0, now - station.liveStartedAt);
+  const liveActive = Boolean(station.liveTrack) && liveElapsed < Math.max(1, station.liveTrack.duration);
+  if (!liveActive && station.liveTrack) {
+    station.liveTrack = null;
+    station.liveStartedAt = 0;
+    station.liveDj = null;
+    station.revision += 1;
+  }
+  const automatic = automaticStationPosition(fallbackTracks, now);
+  const currentTrack = liveActive ? station.liveTrack : fallbackTracks[automatic.index] || null;
+  const tracks = liveActive && !fallbackTracks.some((track) => track.id === station.liveTrack.id)
+    ? [station.liveTrack, ...fallbackTracks]
+    : fallbackTracks;
+  return {
+    configured: Boolean(config.stationFallbackUrl),
+    canDj: isStationDj(session),
+    mode: liveActive ? "live" : "automatic",
+    dj: liveActive ? station.liveDj : null,
+    fallbackUrl: config.stationFallbackUrl,
+    currentTrackId: currentTrack?.id || "",
+    positionMs: liveActive ? liveElapsed : automatic.positionMs,
+    serverTimeMs: now,
+    revision: station.revision,
+    tracks
+  };
+}
+
+async function controlStation(req, res, session) {
+  if (!isStationDj(session)) {
+    sendError(res, 403, "This SoundCloud account is not authorized to DJ the station");
+    return;
+  }
+  const body = await readJsonBody(req);
+  if (body.action === "end") {
+    station.liveTrack = null;
+    station.liveStartedAt = 0;
+    station.liveDj = null;
+    station.revision += 1;
+  } else if (body.action === "play") {
+    const resource = await resolveSoundCloudResource(session, body.trackUrl || "");
+    const track = normalizeStationTrack(resource);
+    if (!track || resource.kind !== "track") {
+      sendError(res, 400, "Choose a SoundCloud track, not a profile or playlist");
+      return;
+    }
+    if (track.access === "blocked" || !track.duration) {
+      sendError(res, 400, "That track is unavailable for off-platform playback");
+      return;
+    }
+    station.liveTrack = track;
+    station.liveStartedAt = Date.now();
+    station.liveDj = {
+      username: session.profile?.username || "JGilla",
+      permalink_url: session.profile?.permalink_url || config.djProfileUrl
+    };
+    station.revision += 1;
+  } else {
+    sendError(res, 400, "Unknown station action");
+    return;
+  }
+  attachUpdatedSession(res, session);
+  sendJson(res, 200, await stationSnapshot(session));
 }
 
 function validateMediaUrl(value) {
@@ -319,8 +590,9 @@ function completeOAuthRedirect(location, parameters) {
   return target.toString();
 }
 
-async function proxyJson(res, response, fallbackMessage) {
+async function proxyJson(res, response, fallbackMessage, session) {
   const payload = await response.json().catch(() => ({}));
+  if (session) attachUpdatedSession(res, session);
   if (!response.ok) {
     sendError(res, response.status, fallbackMessage);
     return;
@@ -383,6 +655,7 @@ async function handleAuthCallback(url, res) {
       code
     });
     const session = {
+      sessionId: randomToken(16),
       accessToken: "",
       refreshToken: "",
       tokenExpiresAt: 0,
@@ -394,14 +667,14 @@ async function handleAuthCallback(url, res) {
     applyTokens(session, tokens);
     const profileResponse = await soundCloudFetch(session, `${SOUNDCLOUD_API}/me`);
     if (!profileResponse.ok) throw new Error("SoundCloud profile verification failed");
-    session.profile = await profileResponse.json();
-    const sessionId = randomToken(32);
-    sessions.set(sessionId, session);
+    const profile = await profileResponse.json();
+    session.profile = { id: profile.id, username: profile.username, permalink_url: profile.permalink_url };
+    const sessionId = sealSession(session);
     const claimCode = randomToken(32);
     oauthClaims.set(claimCode, {
       sessionId,
       createdAt: Date.now(),
-      profile: { id: session.profile.id, username: session.profile.username, permalink_url: session.profile.permalink_url }
+      profile: session.profile
     });
     redirect(res, completeOAuthRedirect(attempt.completeRedirect, { code: claimCode }));
   } catch (error) {
@@ -418,7 +691,7 @@ async function handleLikes(session, res) {
     if (!validateSoundCloudUrl(nextUrl)) throw new Error("SoundCloud returned an invalid pagination URL");
     const response = await soundCloudFetch(session, nextUrl);
     if (!response.ok) {
-      await proxyJson(res, response, "Could not load SoundCloud likes");
+      await proxyJson(res, response, "Could not load SoundCloud likes", session);
       return;
     }
     const payload = await response.json();
@@ -426,6 +699,7 @@ async function handleLikes(session, res) {
     nextUrl = Array.isArray(payload) ? "" : payload.next_href || "";
     page += 1;
   }
+  attachUpdatedSession(res, session);
   sendJson(res, 200, { collection, next_href: nextUrl || null });
 }
 
@@ -465,7 +739,7 @@ async function route(req, res) {
   if (req.method === "GET" && url.pathname.startsWith("/media/")) {
     const ticketId = url.pathname.slice("/media/".length);
     const ticket = mediaTickets.get(ticketId);
-    const session = ticket && sessions.get(ticket.sessionId);
+    const session = ticket?.session;
     if (!ticket || Date.now() - ticket.createdAt > MEDIA_TICKET_TTL_MS || !session) {
       mediaTickets.delete(ticketId);
       sendError(res, 401, "Cloud Llama media ticket is missing or expired");
@@ -477,23 +751,32 @@ async function route(req, res) {
 
   const authenticated = requireSession(req, res);
   if (!authenticated) return;
-  const { id, session } = authenticated;
+  const { session } = authenticated;
 
   if (req.method === "POST" && url.pathname === "/auth/logout") {
-    sessions.delete(id);
     for (const [ticketId, ticket] of mediaTickets) {
-      if (ticket.sessionId === id) mediaTickets.delete(ticketId);
+      if (ticket.sessionId === session.sessionId) mediaTickets.delete(ticketId);
     }
     sendJson(res, 200, { ok: true });
     return;
   }
   if (req.method === "GET" && url.pathname === "/api/me") {
     const response = await soundCloudFetch(session, `${SOUNDCLOUD_API}/me`);
-    await proxyJson(res, response, "Could not load the SoundCloud profile");
+    await proxyJson(res, response, "Could not load the SoundCloud profile", session);
     return;
   }
   if (req.method === "GET" && url.pathname === "/api/likes") {
     await handleLikes(session, res);
+    return;
+  }
+  if (req.method === "GET" && url.pathname === "/api/station") {
+    const snapshot = await stationSnapshot(session);
+    attachUpdatedSession(res, session);
+    sendJson(res, 200, snapshot);
+    return;
+  }
+  if (req.method === "POST" && url.pathname === "/api/station/dj") {
+    await controlStation(req, res, session);
     return;
   }
   if (req.method === "GET" && url.pathname === "/api/media-ticket") {
@@ -503,7 +786,8 @@ async function route(req, res) {
       return;
     }
     const ticketId = randomToken(32);
-    mediaTickets.set(ticketId, { sessionId: id, createdAt: Date.now() });
+    mediaTickets.set(ticketId, { sessionId: session.sessionId, session, createdAt: Date.now() });
+    attachUpdatedSession(res, session);
     sendJson(res, 200, { path: mediaProxyPath(target, ticketId) });
     return;
   }
@@ -514,7 +798,7 @@ async function route(req, res) {
       return;
     }
     const response = await soundCloudFetch(session, target);
-    await proxyJson(res, response, "Could not resolve the SoundCloud stream");
+    await proxyJson(res, response, "Could not resolve the SoundCloud stream", session);
     return;
   }
   if (req.method === "GET" && url.pathname.startsWith("/api/tracks/") && url.pathname.endsWith("/streams")) {
@@ -525,7 +809,7 @@ async function route(req, res) {
       return;
     }
     const response = await soundCloudFetch(session, `${SOUNDCLOUD_API}/tracks/${encodeURIComponent(trackId)}/streams`);
-    await proxyJson(res, response, "Could not resolve the SoundCloud stream");
+    await proxyJson(res, response, "Could not resolve the SoundCloud stream", session);
     return;
   }
 
@@ -535,7 +819,7 @@ async function route(req, res) {
 function createServer() {
   return http.createServer((req, res) => {
     route(req, res).catch((error) => {
-      if (!res.headersSent) sendError(res, 500, error.message || "Internal server error");
+      if (!res.headersSent) sendError(res, Number(error.status) || 500, error.message || "Internal server error");
       else res.end();
     });
   });
@@ -549,11 +833,8 @@ function cleanupExpiredState() {
   for (const [code, claim] of oauthClaims) {
     if (now - claim.createdAt > OAUTH_ATTEMPT_TTL_MS) oauthClaims.delete(code);
   }
-  for (const [id, session] of sessions) {
-    if (session.sessionExpiresAt <= now) sessions.delete(id);
-  }
   for (const [id, ticket] of mediaTickets) {
-    if (now - ticket.createdAt > MEDIA_TICKET_TTL_MS || !sessions.has(ticket.sessionId)) mediaTickets.delete(id);
+    if (now - ticket.createdAt > MEDIA_TICKET_TTL_MS) mediaTickets.delete(id);
   }
 }
 
@@ -569,11 +850,15 @@ if (require.main === module) {
 
 module.exports = {
   allowedOrigin,
+  automaticStationPosition,
+  canonicalSoundCloudUrl,
   config,
   createPkceChallenge,
   createServer,
   mediaRequestHeaders,
+  openSession,
   rewriteHlsManifest,
+  sealSession,
   validateCompleteRedirect,
   validateMediaUrl,
   validateSoundCloudUrl
