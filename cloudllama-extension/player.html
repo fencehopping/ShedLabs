@@ -15,6 +15,7 @@
           <span class="title-rail" aria-hidden="true"></span>
           <h1>CLOUD LLAMA</h1>
           <span class="title-rail" aria-hidden="true"></span>
+          <button id="expandPlayerButton" class="window-button expand" type="button" aria-label="Expand player into its own window" title="Keep player open in its own window"></button>
           <button class="window-button minimize" type="button" aria-label="Minimize player"></button>
           <button class="window-button close" type="button" aria-label="Close player"></button>
         </header>
@@ -65,12 +66,54 @@
                 <button class="transport-button eject" id="settingsButton" type="button" aria-label="SoundCloud settings"><span></span></button>
               </div>
               <div class="mode-group">
-                <button class="mode-button active" id="shuffleButton" type="button" aria-pressed="true"><i></i>SHUFFLE</button>
+                <button class="mode-button" id="shuffleButton" type="button" aria-pressed="false"><i></i>SHUFFLE</button>
                 <button class="mode-button" id="repeatButton" type="button" aria-pressed="false"><i></i>↻</button>
               </div>
               <img class="lightning-logo" src="assets/cloud-llama.png" alt="Cloud Llama" />
             </nav>
           </div>
+        </div>
+      </section>
+
+      <section class="winamp-window playlist-window" id="playlistWindow" aria-label="Cloud Llama playlist">
+        <header class="titlebar playlist-titlebar">
+          <span class="title-rail" aria-hidden="true"></span>
+          <h2 id="playlistTitle">CLOUD LLAMA RADIO</h2>
+          <span class="title-rail" aria-hidden="true"></span>
+        </header>
+        <div class="source-toolbar">
+          <span id="sourceDescription">TUNED TO // SOUND OF TREES</span>
+          <select id="sourceSelect" class="visualizer-select source-select" aria-label="Audio source">
+            <option value="station">SOUND OF TREES RADIO</option>
+            <option value="likes">MY SOUNDCLOUD LIKES</option>
+          </select>
+        </div>
+        <div class="playlist-panel">
+          <div class="playlist-inner">
+            <ol class="track-list" id="trackList" aria-label="Tracks"></ol>
+            <div class="playlist-loader" id="playlistLoader" role="status" aria-live="polite" hidden>
+              <span class="playlist-spinner" aria-hidden="true"></span>
+              <span>LOADING YOUR LIKED TRACKS…</span>
+            </div>
+            <div class="playlist-empty" id="playlistEmpty">
+              <span id="playlistEmptyMessage">CONNECT YOUR SOUNDCLOUD LIKES</span>
+              <button class="dialog-button playlist-sync-button" id="syncSoundCloudButton" type="button">SYNC WITH SOUNDCLOUD</button>
+            </div>
+            <div class="fake-scrollbar" aria-hidden="true"><span id="scrollThumb"></span></div>
+          </div>
+          <footer class="playlist-footer">
+            <button class="footer-button" id="refreshButton" type="button">SYNC</button>
+            <button class="footer-button" id="clearButton" type="button">CLR</button>
+            <button class="footer-button" id="moreButton" type="button">MORE</button>
+            <div class="playlist-status">
+              <a class="soundcloud-credit" href="https://soundcloud.com" target="_blank" rel="noreferrer" aria-label="SoundCloud">
+                <img src="assets/soundcloud-logo-white.png" alt="SoundCloud" />
+              </a>
+              <span id="playlistCount">0 TRACKS</span>
+              <span id="totalDuration">00:00:00</span>
+            </div>
+            <button class="footer-button list-button" id="settingsFooterButton" type="button">LIST<br />OPTS</button>
+          </footer>
         </div>
       </section>
 
@@ -98,57 +141,33 @@
         <header class="titlebar geiss-titlebar">
           <img class="tiny-mark" src="assets/cloud-llama.png" alt="" />
           <span class="title-rail" aria-hidden="true"></span>
-          <h2>GEISS VISUALIZER</h2>
+          <h2 id="visualizerTitle">GEISS VISUALIZER</h2>
           <span class="title-rail" aria-hidden="true"></span>
           <button class="window-button close" id="closeGeissButton" type="button" aria-label="Close visualizer"></button>
         </header>
         <div class="geiss-toolbar">
-          <span>GEISS // CLOUD LLAMA AUDIO REACTOR</span>
+          <span id="visualizerDescription">GEISS // CLOUD LLAMA AUDIO REACTOR</span>
+          <select id="visualizerSelect" class="visualizer-select" aria-label="Visualizer">
+            <option value="geiss">GEISS</option>
+            <option value="seanWasHere">SEANWASHERE</option>
+          </select>
           <button class="footer-button geiss-fullscreen-button" id="geissFullscreenButton" type="button">FULLSCREEN</button>
         </div>
         <div class="geiss-stage" id="geissStage">
           <canvas id="geissCanvas" aria-label="Audio-reactive Geiss-style visualization"></canvas>
+          <iframe
+            id="seanVisualizer"
+            class="sean-visualizer"
+            title="SeanWasHere visualizer"
+            allow="autoplay; fullscreen; picture-in-picture"
+            referrerpolicy="strict-origin-when-cross-origin"
+            hidden
+          ></iframe>
           <div class="geiss-scanlines" aria-hidden="true"></div>
           <div class="geiss-hud" aria-hidden="true">
             <span id="geissPreset">PRESET 01 · VORTEX BLOOM</span>
             <span id="geissFps">60 FPS</span>
           </div>
-        </div>
-        <footer class="geiss-footer">
-          <span id="geissTrack">CLOUD LLAMA READY</span>
-          <span>ESC: EXIT FULLSCREEN</span>
-        </footer>
-      </section>
-
-      <section class="winamp-window playlist-window" id="playlistWindow" aria-label="SoundCloud likes playlist">
-        <header class="titlebar playlist-titlebar">
-          <span class="title-rail" aria-hidden="true"></span>
-          <h2>CLOUD LLAMA LIKES</h2>
-          <span class="title-rail" aria-hidden="true"></span>
-        </header>
-        <div class="playlist-panel">
-          <div class="playlist-inner">
-            <ol class="track-list" id="trackList" aria-label="Liked tracks"></ol>
-            <div class="playlist-empty" id="playlistEmpty">
-              <span id="playlistEmptyMessage">CONNECT YOUR SOUNDCLOUD LIKES</span>
-              <button class="dialog-button playlist-sync-button" id="syncSoundCloudButton" type="button">SYNC WITH SOUNDCLOUD</button>
-            </div>
-            <div class="fake-scrollbar" aria-hidden="true"><span id="scrollThumb"></span></div>
-          </div>
-          <footer class="playlist-footer">
-            <button class="footer-button" id="refreshButton" type="button">SYNC</button>
-            <button class="footer-button" id="clearButton" type="button">CLR</button>
-            <button class="footer-button" id="selectButton" type="button">SEL</button>
-            <button class="footer-button" id="moreButton" type="button">MORE</button>
-            <div class="playlist-status">
-              <a class="soundcloud-credit" href="https://soundcloud.com" target="_blank" rel="noreferrer" aria-label="SoundCloud">
-                <img src="assets/soundcloud-logo-white.png" alt="SoundCloud" />
-              </a>
-              <span id="playlistCount">0 LIKES</span>
-              <span id="totalDuration">00:00:00</span>
-            </div>
-            <button class="footer-button list-button" id="settingsFooterButton" type="button">LIST<br />OPTS</button>
-          </footer>
         </div>
       </section>
     </main>
@@ -163,6 +182,16 @@
         <p>Connect securely through Cloud Llama. SoundCloud authorization is handled by the production service, and your SoundCloud password and the app's Client Secret never enter the extension.</p>
         <button id="connectButton" class="dialog-button connect-button" type="button">Connect to SoundCloud</button>
         <div class="connection-state" id="connectionState" role="status">Not connected</div>
+        <section class="dj-controls" id="djControls" hidden>
+          <strong>JGILLA LIVE CONTROL</strong>
+          <span id="djStatus">AUTOPILOT IS ON AIR</span>
+          <label for="djTrackUrl">SOUNDCLOUD TRACK URL</label>
+          <input id="djTrackUrl" type="url" inputmode="url" placeholder="https://soundcloud.com/artist/track" autocomplete="off" />
+          <div class="dj-actions">
+            <button id="djPlayButton" class="dialog-button" type="button">PLAY TRACK LIVE</button>
+            <button id="djEndButton" class="dialog-button secondary" type="button">END SET</button>
+          </div>
+        </section>
         <footer>
           <button id="disconnectButton" class="dialog-button secondary" type="button">Disconnect</button>
           <button class="dialog-button" value="close" type="submit">Save &amp; close</button>
@@ -170,6 +199,10 @@
       </form>
     </dialog>
 
+    <div class="soundcloud-loader" id="soundcloudLoader" role="status" aria-live="polite" hidden>
+      <span class="soundcloud-spinner" aria-hidden="true"></span>
+      <span id="soundcloudLoaderLabel">TALKING TO SOUNDCLOUD…</span>
+    </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <audio id="audio" preload="metadata" crossorigin="anonymous"></audio>
     <script src="vendor/hls.min.js"></script>

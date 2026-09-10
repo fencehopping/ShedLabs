@@ -1,4 +1,9 @@
 const BACKEND_ORIGIN = "https://shedlabs.onrender.com";
+const pageParams = new URLSearchParams(globalThis.location.search);
+const requestedVisualizerMode = pageParams.get("visualizer");
+const isVisualizerWindow = requestedVisualizerMode === "geiss" || requestedVisualizerMode === "seanWasHere";
+const isPlayerWindow = pageParams.get("playerWindow") === "1";
+let visualizerWindowWasFullscreen = false;
 
 const els = {
   audio: document.querySelector("#audio"),
@@ -16,6 +21,7 @@ const els = {
   stop: document.querySelector("#stopButton"),
   previous: document.querySelector("#previousButton"),
   next: document.querySelector("#nextButton"),
+  expandPlayer: document.querySelector("#expandPlayerButton"),
   shuffle: document.querySelector("#shuffleButton"),
   repeat: document.querySelector("#repeatButton"),
   eq: document.querySelector("#eqButton"),
@@ -30,12 +36,19 @@ const els = {
   geissWindow: document.querySelector("#geissWindow"),
   geissCanvas: document.querySelector("#geissCanvas"),
   geissStage: document.querySelector("#geissStage"),
+  visualizerTitle: document.querySelector("#visualizerTitle"),
+  visualizerDescription: document.querySelector("#visualizerDescription"),
+  visualizerSelect: document.querySelector("#visualizerSelect"),
+  seanVisualizer: document.querySelector("#seanVisualizer"),
   geissClose: document.querySelector("#closeGeissButton"),
   geissFullscreen: document.querySelector("#geissFullscreenButton"),
   geissPreset: document.querySelector("#geissPreset"),
   geissFps: document.querySelector("#geissFps"),
-  geissTrack: document.querySelector("#geissTrack"),
+  playlistTitle: document.querySelector("#playlistTitle"),
+  sourceDescription: document.querySelector("#sourceDescription"),
+  sourceSelect: document.querySelector("#sourceSelect"),
   trackList: document.querySelector("#trackList"),
+  playlistLoader: document.querySelector("#playlistLoader"),
   scrollThumb: document.querySelector("#scrollThumb"),
   playlistEmpty: document.querySelector("#playlistEmpty"),
   playlistEmptyMessage: document.querySelector("#playlistEmptyMessage"),
@@ -43,7 +56,6 @@ const els = {
   totalDuration: document.querySelector("#totalDuration"),
   refresh: document.querySelector("#refreshButton"),
   clear: document.querySelector("#clearButton"),
-  select: document.querySelector("#selectButton"),
   more: document.querySelector("#moreButton"),
   settings: document.querySelector("#settingsButton"),
   settingsFooter: document.querySelector("#settingsFooterButton"),
@@ -53,18 +65,44 @@ const els = {
   syncSoundCloud: document.querySelector("#syncSoundCloudButton"),
   disconnect: document.querySelector("#disconnectButton"),
   connectionState: document.querySelector("#connectionState"),
+  djControls: document.querySelector("#djControls"),
+  djStatus: document.querySelector("#djStatus"),
+  djTrackUrl: document.querySelector("#djTrackUrl"),
+  djPlay: document.querySelector("#djPlayButton"),
+  djEnd: document.querySelector("#djEndButton"),
+  soundcloudLoader: document.querySelector("#soundcloudLoader"),
+  soundcloudLoaderLabel: document.querySelector("#soundcloudLoaderLabel"),
   toast: document.querySelector("#toast")
 };
 
 const state = {
   tracks: [],
+  likesTracks: [],
+  stationTracks: [],
+  sourceMode: "station",
+  station: null,
+  stationPollTimer: 0,
+  canDj: false,
   currentIndex: -1,
+  resumeTrackId: "",
+  resumePositionMs: 0,
+  playlistScrollTop: 0,
+  playerStateSaveTimer: 0,
+  backendRequestCount: 0,
+  backendLoaderShowTimer: 0,
+  backendLoaderHideTimer: 0,
+  remoteFrequencyData: null,
+  lastPlaybackError: "",
   sessionId: "",
   profile: null,
   isLoading: false,
   isPlaying: false,
   isSeeking: false,
-  shuffle: true,
+  shuffle: false,
+  shuffleQueue: [],
+  shuffleHistory: [],
+  savedShuffleQueueIds: [],
+  savedShuffleHistoryIds: [],
   repeat: false,
   visualizerEnabled: true,
   eqEnabled: false,
@@ -73,6 +111,7 @@ const state = {
   eqValues: Array(11).fill(0),
   hls: null,
   geissOpen: false,
+  visualizerMode: "geiss",
   geissFrame: 0,
   geissFeedback: null,
   geissLastPreset: -1,
@@ -104,6 +143,8 @@ const GEISS_PRESETS = [
   "NEON APERTURE",
   "GRAVITY VEIL"
 ];
+
+const SEAN_VISUALIZER_URL = "https://player.vimeo.com/video/1219684367?h=90923081df&background=1&autoplay=1&loop=1&muted=1&playsinline=1&dnt=1";
 
 const storage = {
   async get(defaults) {
@@ -179,6 +220,18 @@ function normalizeTrack(raw) {
   };
 }
 
+function setPlaylistLoading(loading) {
+  els.playlistLoader.hidden = !loading;
+  els.trackList.setAttribute("aria-busy", String(loading));
+  els.playlistEmpty.hidden = loading || state.tracks.length > 0;
+  els.refresh.disabled = loading;
+  els.syncSoundCloud.disabled = loading;
+  if (loading) {
+    els.playlistCount.textContent = "LOADING LIKES…";
+    els.totalDuration.textContent = "--:--:--";
+  }
+}
+
 function renderTracks() {
   els.trackList.replaceChildren();
   const fragment = document.createDocumentFragment();
@@ -201,12 +254,16 @@ function renderTracks() {
     duration.textContent = formatClock(track.duration);
 
     item.append(label, duration);
-    item.addEventListener("dblclick", () => selectTrack(index, true));
-    item.addEventListener("click", () => selectTrack(index, false));
+    item.addEventListener("dblclick", () => {
+      if (state.sourceMode === "likes") selectTrack(index, true);
+    });
+    item.addEventListener("click", () => {
+      if (state.sourceMode === "likes") selectTrack(index, false);
+    });
     item.addEventListener("keydown", (event) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        selectTrack(index, true);
+        if (state.sourceMode === "likes") selectTrack(index, true);
       }
     });
     fragment.append(item);
@@ -216,11 +273,19 @@ function renderTracks() {
   const total = state.tracks.reduce((sum, track) => sum + track.duration, 0);
   const hasTracks = state.tracks.length > 0;
   els.playlistEmpty.hidden = hasTracks;
-  els.playlistEmptyMessage.textContent = state.sessionId ? "NO LIKES LOADED" : "CONNECT YOUR SOUNDCLOUD LIKES";
-  els.syncSoundCloud.textContent = state.sessionId ? "SYNC SOUNDCLOUD LIKES" : "SYNC WITH SOUNDCLOUD";
+  els.playlistEmptyMessage.textContent = state.sourceMode === "station"
+    ? "STATION IS TEMPORARILY UNAVAILABLE"
+    : state.sessionId ? "NO LIKES LOADED" : "CONNECT YOUR SOUNDCLOUD LIKES";
+  els.syncSoundCloud.textContent = state.sourceMode === "station"
+    ? "RETRY CLOUD LLAMA RADIO"
+    : state.sessionId ? "SYNC SOUNDCLOUD LIKES" : "SYNC WITH SOUNDCLOUD";
   els.scrollThumb.parentElement.hidden = !hasTracks;
-  els.playlistCount.textContent = state.sessionId ? `${state.tracks.length} LIKES` : "NOT CONNECTED";
-  els.totalDuration.textContent = state.sessionId ? formatClock(total, true) : "--:--:--";
+  els.playlistCount.textContent = state.sourceMode === "station"
+    ? `${state.tracks.length} RADIO`
+    : state.sessionId ? `${state.tracks.length} LIKES` : "NOT CONNECTED";
+  els.totalDuration.textContent = state.sourceMode === "station" || state.sessionId
+    ? formatClock(total, true)
+    : "--:--:--";
   syncSelectedRow();
 }
 
@@ -230,12 +295,22 @@ function syncSelectedRow() {
   });
 }
 
+function scrollTrackRowIntoView(index) {
+  const row = els.trackList.querySelector(`[data-index="${index}"]`);
+  if (!row) return;
+  const rowTop = row.offsetTop;
+  const rowBottom = rowTop + row.offsetHeight;
+  const visibleTop = els.trackList.scrollTop;
+  const visibleBottom = visibleTop + els.trackList.clientHeight;
+  if (rowTop < visibleTop) els.trackList.scrollTop = rowTop;
+  else if (rowBottom > visibleBottom) els.trackList.scrollTop = rowBottom - els.trackList.clientHeight;
+}
+
 function updateNowPlaying(track) {
   if (!track) {
     els.trackLink.textContent = "CLOUD LLAMA READY — CONNECT SOUNDCLOUD";
     els.trackLink.href = "https://soundcloud.com";
     els.elapsedTime.textContent = "00:00";
-    els.geissTrack.textContent = "CLOUD LLAMA READY";
     return;
   }
 
@@ -244,7 +319,6 @@ function updateNowPlaying(track) {
   els.bitrate.textContent = track.media?.transcodings?.some((item) => item.format?.mime_type?.includes("mp4")) ? "256" : "128";
   els.sampleRate.textContent = "44";
   document.title = `${track.artist} — ${track.title} · Cloud Llama`;
-  els.geissTrack.textContent = `${track.artist} — ${track.title}`.toUpperCase();
   applyAutomaticEq(track);
 }
 
@@ -252,39 +326,366 @@ function currentTrack() {
   return state.tracks[state.currentIndex] || null;
 }
 
-async function backendFetch(path, options = {}) {
-  const headers = new Headers(options.headers || {});
-  headers.set("Accept", "application/json; charset=utf-8");
-  if (state.sessionId) headers.set("Authorization", `Bearer ${state.sessionId}`);
-  const response = await fetch(`${BACKEND_ORIGIN}${path}`, { ...options, headers });
-  const payload = await response.json().catch(() => ({}));
+function playerStateSnapshot() {
+  const livePositionMs = Number.isFinite(els.audio.currentTime) && els.audio.currentTime > 0
+    ? els.audio.currentTime * 1000
+    : state.resumePositionMs;
+  return {
+    trackId: currentTrack()?.id || state.resumeTrackId || "",
+    positionMs: Math.max(0, Number(livePositionMs) || 0),
+    playlistScrollTop: Math.max(0, Number(els.trackList.scrollTop || state.playlistScrollTop) || 0),
+    shuffle: state.shuffle,
+    shuffleQueue: state.shuffleQueue.map((index) => state.tracks[index]?.id).filter(Boolean),
+    shuffleHistory: state.shuffleHistory.slice(-100).map((index) => state.tracks[index]?.id).filter(Boolean),
+    repeat: state.repeat,
+    eqEnabled: state.eqEnabled,
+    eqValues: state.eqValues,
+    equalizerOpen: !els.eqWindow.hidden,
+    visualizerOpen: state.geissOpen,
+    visualizerMode: state.visualizerMode,
+    sourceMode: state.sourceMode,
+    savedAt: Date.now()
+  };
+}
 
-  if (!response.ok) {
-    const error = new Error(payload.error || `Cloud Llama server returned ${response.status}`);
-    error.status = response.status;
-    throw error;
+async function persistPlayerState() {
+  if (state.playerStateSaveTimer) {
+    clearTimeout(state.playerStateSaveTimer);
+    state.playerStateSaveTimer = 0;
   }
+  await storage.set({ chromeampPlayerState: playerStateSnapshot() });
+}
 
+function schedulePlayerStateSave() {
+  if (state.playerStateSaveTimer) return;
+  state.playerStateSaveTimer = setTimeout(() => {
+    state.playerStateSaveTimer = 0;
+    storage.set({ chromeampPlayerState: playerStateSnapshot() });
+  }, 750);
+}
+
+async function restoreAudioPosition(positionMs = state.resumePositionMs) {
+  const positionSeconds = Math.max(0, positionMs / 1000);
+  if (!positionSeconds) return;
+  if (els.audio.readyState < HTMLMediaElement.HAVE_METADATA) {
+    await Promise.race([
+      new Promise((resolve) => els.audio.addEventListener("loadedmetadata", resolve, { once: true })),
+      new Promise((resolve) => setTimeout(resolve, 2500))
+    ]);
+  }
+  try {
+    const maximum = Number.isFinite(els.audio.duration) ? Math.max(0, els.audio.duration - 0.25) : positionSeconds;
+    els.audio.currentTime = Math.min(positionSeconds, maximum);
+  } catch {
+    // Some streams only become seekable after playback starts; timeupdate will
+    // retain the saved position until Chrome exposes a duration.
+  }
+}
+
+function backendRequestLabel(path) {
+  if (path === "/api/likes") return "SYNCING SOUNDCLOUD LIKES…";
+  if (path === "/api/station") return "TUNING CLOUD LLAMA RADIO…";
+  if (path === "/api/me") return "CHECKING SOUNDCLOUD SESSION…";
+  if (path.includes("/streams") || path.startsWith("/api/transcoding") || path.startsWith("/api/media-ticket")) {
+    return "LOADING AUDIO FROM SOUNDCLOUD…";
+  }
+  return "TALKING TO SOUNDCLOUD…";
+}
+
+function beginBackendRequest(path) {
+  state.backendRequestCount += 1;
+  clearTimeout(state.backendLoaderHideTimer);
+  state.backendLoaderHideTimer = 0;
+  const loaderHost = els.settingsDialog.open ? els.settingsDialog : document.body;
+  if (els.soundcloudLoader.parentElement !== loaderHost) loaderHost.append(els.soundcloudLoader);
+  els.soundcloudLoaderLabel.textContent = backendRequestLabel(path);
+  if (!els.soundcloudLoader.hidden || state.backendLoaderShowTimer) return;
+  state.backendLoaderShowTimer = setTimeout(() => {
+    state.backendLoaderShowTimer = 0;
+    if (state.backendRequestCount > 0) els.soundcloudLoader.hidden = false;
+  }, 100);
+}
+
+function endBackendRequest() {
+  state.backendRequestCount = Math.max(0, state.backendRequestCount - 1);
+  if (state.backendRequestCount > 0) return;
+  clearTimeout(state.backendLoaderShowTimer);
+  state.backendLoaderShowTimer = 0;
+  state.backendLoaderHideTimer = setTimeout(() => {
+    state.backendLoaderHideTimer = 0;
+    if (state.backendRequestCount === 0) els.soundcloudLoader.hidden = true;
+  }, 120);
+}
+
+async function backendFetch(path, options = {}) {
+  const { quiet = false, ...fetchOptions } = options;
+  if (!quiet) beginBackendRequest(path);
+  try {
+    const headers = new Headers(fetchOptions.headers || {});
+    headers.set("Accept", "application/json; charset=utf-8");
+    if (state.sessionId) headers.set("Authorization", `Bearer ${state.sessionId}`);
+    const response = await fetch(`${BACKEND_ORIGIN}${path}`, { ...fetchOptions, headers });
+    const updatedSessionId = response.headers.get("X-Cloud-Llama-Session");
+    if (updatedSessionId && updatedSessionId !== state.sessionId) {
+      state.sessionId = updatedSessionId;
+      await storage.set({ chromeampSessionId: updatedSessionId });
+    }
+    const payload = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      const error = new Error(payload.error || `Cloud Llama server returned ${response.status}`);
+      error.status = response.status;
+      throw error;
+    }
+
+    return payload;
+  } finally {
+    if (!quiet) endBackendRequest();
+  }
+}
+
+function playbackEnginePayload() {
+  return {
+    tracks: state.tracks.map((track) => ({
+      id: track.id,
+      urn: track.urn,
+      access: track.access,
+      media: track.media,
+      duration: track.duration,
+      title: track.title,
+      artist: track.artist,
+      permalink_url: track.permalink_url
+    })),
+    trackId: currentTrack()?.id || state.resumeTrackId || "",
+    sessionId: state.sessionId,
+    shuffle: state.shuffle,
+    repeat: state.repeat,
+    shuffleQueue: state.shuffleQueue.map((index) => state.tracks[index]?.id).filter(Boolean),
+    shuffleHistory: state.shuffleHistory.slice(-100).map((index) => state.tracks[index]?.id).filter(Boolean),
+    sourceMode: state.sourceMode,
+    stationRevision: state.station?.revision || 0,
+    volume: Number(els.volume.value)
+  };
+}
+
+async function sendPlaybackCommand(command, payload = {}) {
+  if (!globalThis.chrome?.runtime?.sendMessage) return { ok: false, error: "Background playback is unavailable" };
+  return chrome.runtime.sendMessage({
+    type: "chromeamp:playbackCommand",
+    target: "background",
+    command,
+    payload
+  });
+}
+
+function applyRemoteShuffleOrder(playback) {
+  const indexById = new Map(state.tracks.map((track, index) => [track.id, index]));
+  if (Array.isArray(playback.shuffleQueue)) {
+    state.shuffleQueue = playback.shuffleQueue.map((id) => indexById.get(id)).filter(Number.isInteger);
+  }
+  if (Array.isArray(playback.shuffleHistory)) {
+    state.shuffleHistory = playback.shuffleHistory.map((id) => indexById.get(id)).filter(Number.isInteger);
+  }
+}
+
+function applyPlaybackState(playback) {
+  if (!playback) return;
+  if (typeof playback.trackId === "string" && playback.trackId) state.resumeTrackId = playback.trackId;
+  if (typeof playback.shuffle === "boolean") state.shuffle = playback.shuffle;
+  if (typeof playback.repeat === "boolean") state.repeat = playback.repeat;
+  if (state.station && playback.sourceMode === "station") {
+    state.station.mode = playback.stationMode === "live" ? "live" : "automatic";
+    state.station.dj = playback.stationDj || null;
+  }
+  setButtonState(els.shuffle, state.shuffle);
+  setButtonState(els.repeat, state.repeat);
+  applyRemoteShuffleOrder(playback);
+  const remoteIndex = state.tracks.findIndex((track) => track.id === playback.trackId);
+  if (remoteIndex >= 0 && remoteIndex !== state.currentIndex) {
+    state.currentIndex = remoteIndex;
+    state.resumeTrackId = playback.trackId;
+    syncSelectedRow();
+    updateNowPlaying(currentTrack());
+    scrollTrackRowIntoView(remoteIndex);
+  }
+  state.remoteFrequencyData = Array.isArray(playback.frequencyData) && playback.frequencyData.length
+    ? Uint8Array.from(playback.frequencyData)
+    : null;
+  state.resumePositionMs = Math.max(0, Number(playback.positionMs) || 0);
+  updateProgress(state.resumePositionMs, Number(playback.durationMs) || currentTrack()?.duration || 0);
+  setPlaying(Boolean(playback.isPlaying));
+  if (playback.error && playback.error !== state.lastPlaybackError) showToast(playback.error, 5000);
+  state.lastPlaybackError = playback.error || "";
+  updateSourceInterface();
+}
+
+function updateDjControls() {
+  els.djControls.hidden = !state.canDj;
+  if (!state.canDj) return;
+  const live = state.station?.mode === "live";
+  els.djStatus.textContent = live
+    ? `LIVE NOW — ${state.station.dj?.username || "JGILLA"}`
+    : "AUTOPILOT IS ON AIR";
+  els.djEnd.disabled = !live;
+}
+
+function updateSourceInterface() {
+  const stationMode = state.sourceMode === "station";
+  const live = stationMode && state.station?.mode === "live";
+  els.playlistTitle.textContent = stationMode
+    ? live ? "CLOUD LLAMA RADIO · LIVE" : "CLOUD LLAMA RADIO · AUTOPILOT"
+    : "CLOUD LLAMA LIKES";
+  els.sourceSelect.value = state.sourceMode;
+  els.sourceSelect.options[0].textContent = live ? "LIVE — JGILLA RADIO" : "SOUND OF TREES RADIO";
+  els.sourceDescription.textContent = stationMode
+    ? live ? `TUNED TO // ${state.station?.dj?.username || "JGILLA"} LIVE` : "TUNED TO // SOUND OF TREES"
+    : state.profile ? `TUNED TO // ${state.profile.username}'S LIKES` : "MY LIKES // CONNECT SOUNDCLOUD";
+  els.seek.disabled = stationMode;
+  els.previous.disabled = stationMode;
+  els.next.disabled = stationMode;
+  els.shuffle.disabled = stationMode;
+  els.repeat.disabled = stationMode;
+  els.clear.disabled = stationMode;
+  els.refresh.textContent = stationMode ? "TUNE" : "SYNC";
+  updateDjControls();
+}
+
+function activateTrackCollection(tracks, preferredTrackId = "", positionMs = 0) {
+  state.tracks = tracks;
+  const preferredIndex = state.tracks.findIndex((track) => track.id === preferredTrackId);
+  state.currentIndex = preferredIndex >= 0 ? preferredIndex : (state.tracks.length ? 0 : -1);
+  state.resumeTrackId = currentTrack()?.id || "";
+  state.resumePositionMs = Math.max(0, Number(positionMs) || 0);
+  if (state.sourceMode === "likes") hydrateShuffleOrder();
+  else {
+    state.shuffleQueue = [];
+    state.shuffleHistory = [];
+  }
+  renderTracks();
+  updateNowPlaying(currentTrack());
+  updateProgress(state.resumePositionMs, currentTrack()?.duration || 0);
+  updateSourceInterface();
+}
+
+function applyStationPayload(payload) {
+  const previousTrackIds = state.stationTracks.map((track) => track.id).join("|");
+  const previousCurrentTrackId = currentTrack()?.id || "";
+  state.station = payload;
+  state.canDj = Boolean(payload.canDj);
+  state.stationTracks = (payload.tracks || []).map(normalizeTrack).filter((track) => track.kind !== "playlist");
+  if (state.sourceMode === "station") {
+    const nextTrackIds = state.stationTracks.map((track) => track.id).join("|");
+    if (previousTrackIds !== nextTrackIds || previousCurrentTrackId !== payload.currentTrackId) {
+      activateTrackCollection(state.stationTracks, payload.currentTrackId, payload.positionMs);
+    } else {
+      state.resumePositionMs = Math.max(0, Number(payload.positionMs) || 0);
+      updateProgress(state.resumePositionMs, currentTrack()?.duration || 0);
+      updateSourceInterface();
+    }
+  } else {
+    updateSourceInterface();
+  }
+}
+
+async function fetchStation({ quiet = false } = {}) {
+  try {
+    const payload = await backendFetch("/api/station", { quiet });
+    applyStationPayload(payload);
+    return payload;
+  } catch (error) {
+    if (!quiet) showToast(error.message || "Cloud Llama Radio is unavailable", 4200);
+    if (state.sourceMode === "station" && !state.stationTracks.length) renderTracks();
+    return null;
+  }
+}
+
+async function switchSource(mode) {
+  const nextMode = mode === "likes" ? "likes" : "station";
+  if (state.sourceMode === nextMode) return;
+  const wasPlaying = state.isPlaying;
+  await stopPlayback();
+  state.sourceMode = nextMode;
+  if (nextMode === "station") {
+    const payload = await fetchStation();
+    if (!payload) updateSourceInterface();
+  } else {
+    activateTrackCollection(state.likesTracks, "", 0);
+  }
+  await sendPlaybackCommand("configure", playbackEnginePayload()).catch(() => {});
+  schedulePlayerStateSave();
+  if (wasPlaying && currentTrack()) await playCurrent();
+}
+
+async function sendDjAction(action, trackUrl = "") {
+  const payload = await backendFetch("/api/station/dj", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ action, trackUrl })
+  });
+  applyStationPayload(payload);
   return payload;
+}
+
+async function playDjTrack() {
+  const trackUrl = els.djTrackUrl.value.trim();
+  if (!trackUrl) {
+    showToast("Paste a SoundCloud track URL first", 2800);
+    els.djTrackUrl.focus();
+    return;
+  }
+  els.djPlay.disabled = true;
+  try {
+    await sendDjAction("play", trackUrl);
+    els.djTrackUrl.value = "";
+    showToast("JGilla is live on Cloud Llama Radio", 3200);
+    if (state.sourceMode !== "station") await switchSource("station");
+  } catch (error) {
+    showToast(error.message || "Could not put that track on air", 5000);
+  } finally {
+    els.djPlay.disabled = false;
+  }
+}
+
+async function endDjSet() {
+  els.djEnd.disabled = true;
+  try {
+    await sendDjAction("end");
+    showToast("Autopilot resumed", 2400);
+  } catch (error) {
+    showToast(error.message || "Could not end the DJ set", 5000);
+  } finally {
+    updateDjControls();
+  }
 }
 
 async function fetchLikes() {
   if (!state.sessionId || state.isLoading) return;
   state.isLoading = true;
+  setPlaylistLoading(true);
   els.connectionState.textContent = "Connecting to SoundCloud…";
 
   try {
-    const [profile, payload] = await Promise.all([
-      backendFetch("/api/me"),
-      backendFetch("/api/likes")
-    ]);
+    // Keep these sequential so a refreshed, rotated OAuth session from /api/me
+    // is saved before the likes request starts.
+    const profile = await backendFetch("/api/me");
+    const payload = await backendFetch("/api/likes");
     state.profile = profile;
-    state.tracks = (payload.collection || []).map(normalizeTrack).filter((track) => track.kind !== "playlist");
-    state.currentIndex = state.tracks.length ? 0 : -1;
-    renderTracks();
-    updateNowPlaying(currentTrack());
-    els.connectionState.textContent = `Connected as ${state.profile.username} · ${state.tracks.length} likes loaded`;
-    showToast(`Synced ${state.tracks.length} SoundCloud likes`);
+    state.likesTracks = (payload.collection || []).map(normalizeTrack).filter((track) => track.kind !== "playlist");
+    const restoredIndex = state.likesTracks.findIndex((track) => track.id === state.resumeTrackId);
+    if (state.sourceMode === "likes") {
+      activateTrackCollection(
+        state.likesTracks,
+        restoredIndex >= 0 ? state.resumeTrackId : "",
+        restoredIndex >= 0 ? state.resumePositionMs : 0
+      );
+    }
+    requestAnimationFrame(() => {
+      els.trackList.scrollTop = Math.max(0, state.playlistScrollTop);
+      syncPlaylistScrollbar();
+    });
+    els.connectionState.textContent = `Connected as ${state.profile.username} · ${state.likesTracks.length} likes loaded`;
+    showToast(`Synced ${state.likesTracks.length} SoundCloud likes`);
+    schedulePlayerStateSave();
   } catch (error) {
     const expired = error.status === 401;
     if (expired) {
@@ -294,12 +695,11 @@ async function fetchLikes() {
     }
     els.connectionState.textContent = expired ? "Local session expired · Reconnect SoundCloud" : error.message;
     showToast(expired ? "Cloud Llama session expired — reconnect SoundCloud" : error.message, 4200);
-    state.tracks = [];
-    state.currentIndex = -1;
-    renderTracks();
-    updateNowPlaying(null);
+    state.likesTracks = [];
+    if (state.sourceMode === "likes") activateTrackCollection([], "", 0);
   } finally {
     state.isLoading = false;
+    setPlaylistLoading(false);
   }
 }
 
@@ -414,25 +814,29 @@ async function attachStream(stream) {
   throw new Error("This Chrome version cannot play SoundCloud's AAC stream");
 }
 
-async function selectTrack(index, autoplay = false) {
+async function selectTrack(index, autoplay = false, preserveShuffleOrder = false) {
   if (!state.tracks.length) return;
   const bounded = ((index % state.tracks.length) + state.tracks.length) % state.tracks.length;
   const changing = bounded !== state.currentIndex;
 
-  if (changing) stopPlayback(true);
+  if (changing) await stopPlayback(true);
   state.currentIndex = bounded;
+  if (state.shuffle && !preserveShuffleOrder) resetShuffleOrder();
+  state.resumeTrackId = currentTrack()?.id || "";
+  state.resumePositionMs = 0;
   syncSelectedRow();
   updateNowPlaying(currentTrack());
   els.seek.value = "0";
   updateRangeVisual(els.seek);
   els.elapsedTime.textContent = "00:00";
 
-  const row = els.trackList.querySelector(`[data-index="${bounded}"]`);
-  row?.scrollIntoView({ block: "nearest" });
+  scrollTrackRowIntoView(bounded);
+  schedulePlayerStateSave();
   if (autoplay) await playCurrent();
 }
 
 async function playCurrent() {
+  if (state.sourceMode === "station") await fetchStation({ quiet: true });
   const track = currentTrack();
   if (!track) return;
 
@@ -441,40 +845,52 @@ async function playCurrent() {
     return;
   }
 
-  if (!state.sessionId) {
+  if (!state.sessionId && state.sourceMode === "likes") {
     openSettings();
     return;
   }
 
+  beginBackendRequest("/api/tracks/background/streams");
   try {
-    if (!els.audio.src || els.audio.dataset.trackId !== track.id) {
-      els.trackLink.textContent = `BUFFERING — ${track.artist} - ${track.title}`.toUpperCase();
-      const stream = await resolveStream(track);
-      await attachStream(stream);
-      els.audio.dataset.trackId = track.id;
-      updateNowPlaying(track);
-    }
-    await ensureAudioAnalyser();
-    await els.audio.play();
+    els.trackLink.textContent = `BUFFERING — ${track.artist} - ${track.title}`.toUpperCase();
+    const response = await sendPlaybackCommand("play", {
+      ...playbackEnginePayload(),
+      trackId: track.id,
+      positionMs: state.sourceMode === "station"
+        ? Math.max(0, Number(state.station?.positionMs) || 0)
+        : track.id === state.resumeTrackId ? state.resumePositionMs : 0
+    });
+    if (!response?.ok) throw new Error(response?.error || "Could not start background playback");
+    applyPlaybackState(response.playback);
+    updateNowPlaying(track);
     setPlaying(true);
   } catch (error) {
     setPlaying(false);
     showToast(error.message || "Could not play this track", 4200);
     updateNowPlaying(track);
+  } finally {
+    endBackendRequest();
   }
 }
 
 function pausePlayback() {
-  els.audio.pause();
+  sendPlaybackCommand("pause").catch(() => {});
   setPlaying(false);
+  schedulePlayerStateSave();
 }
 
 function stopPlayback(reset = true) {
-  pausePlayback();
+  setPlaying(false);
+  let commandPromise;
   if (reset) {
-    els.audio.currentTime = 0;
+    commandPromise = sendPlaybackCommand("stop").catch(() => {});
+    state.resumePositionMs = 0;
+  } else {
+    commandPromise = sendPlaybackCommand("pause").catch(() => {});
   }
   if (reset) updateProgress(0, currentTrack()?.duration || 0);
+  schedulePlayerStateSave();
+  return commandPromise;
 }
 
 function setPlaying(playing) {
@@ -484,12 +900,18 @@ function setPlaying(playing) {
 }
 
 function updateProgress(positionMs, durationMs) {
+  const audioIsCurrentTrack = Boolean(els.audio.dataset.trackId)
+    && els.audio.dataset.trackId === currentTrack()?.id;
+  if ((!els.audio.src || audioIsCurrentTrack) && Number.isFinite(positionMs) && positionMs >= 0) {
+    state.resumePositionMs = positionMs;
+  }
   if (!state.isSeeking) {
     const ratio = durationMs ? positionMs / durationMs : 0;
     els.seek.value = String(Math.round(Math.max(0, Math.min(1, ratio)) * 1000));
     updateRangeVisual(els.seek);
   }
   els.elapsedTime.textContent = formatClock(positionMs);
+  schedulePlayerStateSave();
 }
 
 function handleTrackEnd() {
@@ -504,15 +926,65 @@ function handleTrackEnd() {
 function goNext() {
   if (!state.tracks.length) return;
   const nextIndex = state.shuffle && state.tracks.length > 1
-    ? pickRandomIndex()
+    ? nextShuffleIndex()
     : (state.currentIndex + 1) % state.tracks.length;
-  selectTrack(nextIndex, true);
+  selectTrack(nextIndex, true, state.shuffle);
 }
 
-function pickRandomIndex() {
-  let index = state.currentIndex;
-  while (index === state.currentIndex) index = Math.floor(Math.random() * state.tracks.length);
-  return index;
+function shuffledTrackIndexes(excludedIndex = state.currentIndex) {
+  const indexes = state.tracks.map((_track, index) => index).filter((index) => index !== excludedIndex);
+  for (let index = indexes.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(Math.random() * (index + 1));
+    [indexes[index], indexes[swapIndex]] = [indexes[swapIndex], indexes[index]];
+  }
+  return indexes;
+}
+
+function resetShuffleOrder() {
+  state.shuffleQueue = shuffledTrackIndexes();
+  state.shuffleHistory = [];
+}
+
+function hydrateShuffleOrder() {
+  if (!state.shuffle || !state.tracks.length) {
+    state.shuffleQueue = [];
+    state.shuffleHistory = [];
+    return;
+  }
+  const indexById = new Map(state.tracks.map((track, index) => [track.id, index]));
+  const seenQueueIndexes = new Set();
+  state.shuffleQueue = state.savedShuffleQueueIds
+    .map((id) => indexById.get(id))
+    .filter((index) => Number.isInteger(index) && index !== state.currentIndex && !seenQueueIndexes.has(index) && seenQueueIndexes.add(index));
+  state.shuffleHistory = state.savedShuffleHistoryIds
+    .map((id) => indexById.get(id))
+    .filter(Number.isInteger);
+  state.savedShuffleQueueIds = [];
+  state.savedShuffleHistoryIds = [];
+  if (!state.shuffleQueue.length) state.shuffleQueue = shuffledTrackIndexes();
+}
+
+function nextShuffleIndex() {
+  if (!state.shuffleQueue.length) state.shuffleQueue = shuffledTrackIndexes();
+  const nextIndex = state.shuffleQueue.shift();
+  if (!Number.isInteger(nextIndex)) return state.currentIndex;
+  if (state.currentIndex >= 0) {
+    state.shuffleHistory.push(state.currentIndex);
+    if (state.shuffleHistory.length > 100) state.shuffleHistory.shift();
+  }
+  return nextIndex;
+}
+
+function goPrevious() {
+  if (!state.tracks.length) return;
+  if (!state.shuffle || !state.shuffleHistory.length) {
+    selectTrack(state.currentIndex - 1, true);
+    return;
+  }
+  const previousIndex = state.shuffleHistory.pop();
+  state.shuffleQueue = state.shuffleQueue.filter((index) => index !== state.currentIndex);
+  state.shuffleQueue.unshift(state.currentIndex);
+  selectTrack(previousIndex, true, true);
 }
 
 function openSettings() {
@@ -553,21 +1025,30 @@ async function connectSoundCloud() {
 }
 
 async function disconnect() {
-  stopPlayback();
+  await stopPlayback();
   clearAudioSource();
   if (state.sessionId) {
     await backendFetch("/auth/logout", { method: "POST" }).catch(() => {});
   }
   state.sessionId = "";
   state.profile = null;
+  state.sourceMode = "station";
+  state.likesTracks = [];
+  state.stationTracks = [];
+  state.station = null;
+  state.canDj = false;
+  await sendPlaybackCommand("disconnect").catch(() => {});
   await storage.remove(["chromeampSessionId", "chromeampProfile", "chromeampOAuthStatus", "soundcloudAccessToken"]);
   state.tracks = [];
   state.currentIndex = -1;
-  renderTracks();
-  updateNowPlaying(null);
+  state.resumeTrackId = "";
+  state.resumePositionMs = 0;
+  await fetchStation();
+  await sendPlaybackCommand("configure", playbackEnginePayload()).catch(() => {});
   els.connect.textContent = "Connect to SoundCloud";
   els.connectionState.textContent = "Not connected";
-  showToast("Disconnected from SoundCloud");
+  await persistPlayerState();
+  showToast("Disconnected from personal Likes · Radio remains available");
 }
 
 function updateEqDisplay() {
@@ -610,6 +1091,7 @@ function persistEqSettings() {
     eqAuto: state.eqAuto,
     eqValues: state.eqValues
   });
+  sendPlaybackCommand("configure", playbackEnginePayload()).catch(() => {});
 }
 
 function setEqPreset(preset) {
@@ -664,6 +1146,7 @@ function toggleEqualizerPanel(force) {
   setButtonState(els.eq, opening);
   if (opening) els.eqOn.focus();
   else els.eq.focus();
+  schedulePlayerStateSave();
 }
 
 function buildVisualizer() {
@@ -678,10 +1161,11 @@ function buildVisualizer() {
 
 function animateVisualizer() {
   const bars = els.visualizer.children;
-  if (state.visualizerEnabled && state.isPlaying && state.analyser && state.frequencyData) {
-    state.analyser.getByteFrequencyData(state.frequencyData);
+  const visualizerData = state.remoteFrequencyData || state.frequencyData;
+  if (state.visualizerEnabled && state.isPlaying && visualizerData) {
+    if (state.analyser && !state.remoteFrequencyData) state.analyser.getByteFrequencyData(state.frequencyData);
     const firstBin = 1;
-    const lastBin = Math.min(128, state.frequencyData.length - 1);
+    const lastBin = Math.min(128, visualizerData.length - 1);
 
     for (let barIndex = 0; barIndex < bars.length; barIndex += 1) {
       const startRatio = barIndex / bars.length;
@@ -692,7 +1176,7 @@ function animateVisualizer() {
       let peak = 0;
 
       for (let bin = start; bin < end; bin += 1) {
-        const level = state.frequencyData[bin];
+        const level = visualizerData[bin];
         sum += level;
         peak = Math.max(peak, level);
       }
@@ -741,14 +1225,15 @@ async function ensureAudioAnalyser() {
 }
 
 function geissEnergy() {
-  if (!state.analyser || !state.frequencyData) {
+  const visualizerData = state.remoteFrequencyData || state.frequencyData;
+  if (!visualizerData) {
     const idle = state.isPlaying ? 0.3 : 0.08;
     return { bass: idle, mid: idle * 0.72, high: idle * 0.48 };
   }
-  state.analyser.getByteFrequencyData(state.frequencyData);
+  if (state.analyser && !state.remoteFrequencyData) state.analyser.getByteFrequencyData(state.frequencyData);
   const average = (start, end) => {
     let sum = 0;
-    for (let index = start; index < end; index += 1) sum += state.frequencyData[index];
+    for (let index = start; index < end; index += 1) sum += visualizerData[index] || 0;
     return sum / Math.max(1, end - start) / 255;
   };
   return {
@@ -775,8 +1260,38 @@ function resizeGeissCanvas() {
   return true;
 }
 
+function syncVisualizerMode() {
+  const isSeanVisualizer = state.visualizerMode === "seanWasHere";
+  els.visualizerSelect.value = state.visualizerMode;
+  els.geissWindow.classList.toggle("sean-mode", isSeanVisualizer);
+  els.geissCanvas.hidden = isSeanVisualizer;
+  els.seanVisualizer.hidden = !isSeanVisualizer;
+  els.geissWindow.setAttribute("aria-label", isSeanVisualizer ? "SeanWasHere visualizer" : "Geiss visualizer");
+  els.visualizerTitle.textContent = isSeanVisualizer ? "SEANWASHERE VISUALIZER" : "GEISS VISUALIZER";
+  els.visualizerDescription.textContent = isSeanVisualizer
+    ? "SEANWASHERE // VIDEO STREAM"
+    : "GEISS // CLOUD LLAMA AUDIO REACTOR";
+  els.geissPreset.parentElement.hidden = isSeanVisualizer;
+
+  if (isSeanVisualizer) {
+    if (state.geissFrame) cancelAnimationFrame(state.geissFrame);
+    state.geissFrame = 0;
+    if (state.geissOpen && !els.seanVisualizer.hasAttribute("src")) els.seanVisualizer.src = SEAN_VISUALIZER_URL;
+  } else {
+    els.seanVisualizer.removeAttribute("src");
+    if (state.geissOpen && !state.geissFrame) state.geissFrame = requestAnimationFrame(drawGeissFrame);
+  }
+}
+
+function selectVisualizer(mode, announce = false) {
+  state.visualizerMode = mode === "seanWasHere" ? "seanWasHere" : "geiss";
+  syncVisualizerMode();
+  schedulePlayerStateSave();
+  if (announce) showToast(state.visualizerMode === "seanWasHere" ? "Visualizer: SeanWasHere" : "Visualizer: Geiss", 1800);
+}
+
 function drawGeissFrame(now) {
-  if (!state.geissOpen) {
+  if (!state.geissOpen || state.visualizerMode !== "geiss") {
     state.geissFrame = 0;
     return;
   }
@@ -902,16 +1417,17 @@ async function openGeissVisualizer() {
   state.geissOpen = true;
   els.geissWindow.hidden = false;
   setButtonState(els.viz, true);
-  els.geissTrack.textContent = currentTrack()
-    ? `${currentTrack().artist} — ${currentTrack().title}`.toUpperCase()
-    : "CLOUD LLAMA READY";
-  try {
-    await ensureAudioAnalyser();
-  } catch (error) {
-    showToast(`${error.message} — running ambient mode`, 4200);
+  syncVisualizerMode();
+  if (state.visualizerMode === "geiss") {
+    try {
+      await ensureAudioAnalyser();
+    } catch (error) {
+      showToast(`${error.message} — running ambient mode`, 4200);
+    }
+    if (!state.geissFrame) state.geissFrame = requestAnimationFrame(drawGeissFrame);
   }
-  if (!state.geissFrame) state.geissFrame = requestAnimationFrame(drawGeissFrame);
-  els.geissFullscreen.focus();
+  schedulePlayerStateSave();
+  els.geissFullscreen.focus({ preventScroll: true });
 }
 
 async function closeGeissVisualizer() {
@@ -921,11 +1437,36 @@ async function closeGeissVisualizer() {
   setButtonState(els.viz, false);
   if (state.geissFrame) cancelAnimationFrame(state.geissFrame);
   state.geissFrame = 0;
-  els.viz.focus();
+  els.seanVisualizer.removeAttribute("src");
+  schedulePlayerStateSave();
+  els.viz.focus({ preventScroll: true });
 }
 
 async function toggleGeissFullscreen() {
   try {
+    if (isVisualizerWindow && globalThis.chrome?.windows) {
+      const currentWindow = await chrome.windows.getCurrent();
+      if (currentWindow.id == null) throw new Error("Visualizer window is unavailable");
+      await chrome.windows.update(currentWindow.id, {
+        focused: true,
+        state: currentWindow.state === "fullscreen" ? "normal" : "fullscreen"
+      });
+      await syncGeissFullscreenState();
+      return;
+    }
+
+    if (globalThis.chrome?.windows && globalThis.chrome?.runtime?.getURL) {
+      const visualizerUrl = new URL(chrome.runtime.getURL("player.html"));
+      visualizerUrl.searchParams.set("visualizer", state.visualizerMode);
+      await chrome.windows.create({
+        url: visualizerUrl.href,
+        type: "popup",
+        state: "fullscreen",
+        focused: true
+      });
+      return;
+    }
+
     if (document.fullscreenElement === els.geissWindow) {
       await document.exitFullscreen();
     } else {
@@ -936,27 +1477,69 @@ async function toggleGeissFullscreen() {
   }
 }
 
-function syncGeissFullscreenState() {
-  const fullscreen = document.fullscreenElement === els.geissWindow;
+async function syncGeissFullscreenState() {
+  let fullscreen = document.fullscreenElement === els.geissWindow;
+  if (isVisualizerWindow && globalThis.chrome?.windows) {
+    const currentWindow = await chrome.windows.getCurrent().catch(() => null);
+    fullscreen = currentWindow?.state === "fullscreen";
+    if (fullscreen) visualizerWindowWasFullscreen = true;
+    if (visualizerWindowWasFullscreen && currentWindow && !fullscreen) {
+      window.close();
+      return;
+    }
+  }
   els.geissFullscreen.textContent = fullscreen ? "EXIT FULLSCREEN" : "FULLSCREEN";
-  resizeGeissCanvas();
+  if (state.visualizerMode === "geiss") resizeGeissCanvas();
+}
+
+function syncPlaylistScrollbar() {
+  const max = els.trackList.scrollHeight - els.trackList.clientHeight;
+  const percent = max ? (els.trackList.scrollTop / max) * 100 : 0;
+  els.scrollThumb.style.setProperty("--scroll", `${Math.min(92, percent * 0.92)}%`);
+}
+
+async function expandPlayerWindow() {
+  if (isPlayerWindow) return;
+  await persistPlayerState();
+  try {
+    const response = await chrome.runtime.sendMessage({
+      type: "chromeamp:openPlayerWindow",
+      target: "background"
+    });
+    if (!response?.ok) throw new Error(response?.error || "Chrome could not open the player window");
+  } catch (error) {
+    showToast(error.message || "Chrome could not open the player window", 4200);
+  }
 }
 
 function bindEvents() {
+  if (globalThis.chrome?.runtime?.onMessage) {
+    chrome.runtime.onMessage.addListener((message) => {
+      if (message?.target === "popup" && message?.type === "chromeamp:playbackState") {
+        applyPlaybackState(message.playback);
+      }
+      if (message?.target === "popup" && message?.type === "chromeamp:sessionUpdated" && message.sessionId) {
+        state.sessionId = message.sessionId;
+      }
+    });
+  }
   els.play.addEventListener("click", playCurrent);
+  els.expandPlayer.addEventListener("click", expandPlayerWindow);
   els.pause.addEventListener("click", pausePlayback);
   els.stop.addEventListener("click", () => stopPlayback());
-  els.previous.addEventListener("click", () => selectTrack(state.currentIndex - 1, true));
+  els.previous.addEventListener("click", goPrevious);
   els.next.addEventListener("click", goNext);
 
   els.volume.addEventListener("input", () => {
     els.audio.volume = Number(els.volume.value) / 100;
     updateRangeVisual(els.volume);
     storage.set({ volume: Number(els.volume.value) });
+    sendPlaybackCommand("volume", { volume: Number(els.volume.value) }).catch(() => {});
   });
 
   els.balance.addEventListener("input", () => {
     updateRangeVisual(els.balance);
+    storage.set({ balance: Number(els.balance.value) });
   });
 
   els.seek.addEventListener("pointerdown", () => { state.isSeeking = true; });
@@ -967,19 +1550,33 @@ function bindEvents() {
   });
   els.seek.addEventListener("change", () => {
     const position = (Number(els.seek.value) / 1000) * (currentTrack()?.duration || 0);
+    state.resumePositionMs = position;
     if (Number.isFinite(els.audio.duration)) {
       els.audio.currentTime = position / 1000;
     }
+    sendPlaybackCommand("seek", { positionMs: position }).catch(() => {});
     state.isSeeking = false;
+    schedulePlayerStateSave();
   });
 
   els.shuffle.addEventListener("click", () => {
     state.shuffle = !state.shuffle;
+    if (state.shuffle) resetShuffleOrder();
+    else {
+      state.shuffleQueue = [];
+      state.shuffleHistory = [];
+    }
     setButtonState(els.shuffle, state.shuffle);
+    els.shuffle.title = state.shuffle ? "Shuffle on" : "Shuffle off";
+    showToast(state.shuffle ? "Shuffle on" : "Shuffle off", 1600);
+    sendPlaybackCommand("configure", playbackEnginePayload()).catch(() => {});
+    schedulePlayerStateSave();
   });
   els.repeat.addEventListener("click", () => {
     state.repeat = !state.repeat;
     setButtonState(els.repeat, state.repeat);
+    sendPlaybackCommand("configure", playbackEnginePayload()).catch(() => {});
+    schedulePlayerStateSave();
   });
   els.eq.addEventListener("click", () => toggleEqualizerPanel());
   els.eqClose.addEventListener("click", () => toggleEqualizerPanel(false));
@@ -1006,32 +1603,49 @@ function bindEvents() {
     else openGeissVisualizer();
   });
   els.geissClose.addEventListener("click", closeGeissVisualizer);
+  els.visualizerSelect.addEventListener("change", () => selectVisualizer(els.visualizerSelect.value, true));
   els.geissFullscreen.addEventListener("click", toggleGeissFullscreen);
   document.addEventListener("fullscreenchange", syncGeissFullscreenState);
+  globalThis.chrome?.windows?.onBoundsChanged?.addListener(() => {
+    if (isVisualizerWindow) syncGeissFullscreenState();
+  });
   [els.settings, els.settingsFooter].forEach((button) => button.addEventListener("click", openSettings));
   els.settingsForm.addEventListener("submit", saveSettings);
+  els.djPlay.addEventListener("click", playDjTrack);
+  els.djEnd.addEventListener("click", endDjSet);
   els.connect.addEventListener("click", connectSoundCloud);
-  els.syncSoundCloud.addEventListener("click", () => state.sessionId ? fetchLikes() : openSettings());
+  els.syncSoundCloud.addEventListener("click", () => {
+    if (state.sourceMode === "station") fetchStation();
+    else if (!state.sessionId) openSettings();
+    else fetchLikes();
+  });
   els.disconnect.addEventListener("click", disconnect);
-  els.refresh.addEventListener("click", () => state.sessionId ? fetchLikes() : openSettings());
+  els.refresh.addEventListener("click", () => {
+    if (state.sourceMode === "station") fetchStation();
+    else if (!state.sessionId) openSettings();
+    else fetchLikes();
+  });
   els.clear.addEventListener("click", () => {
     stopPlayback();
     clearAudioSource();
     state.tracks = [];
     state.currentIndex = -1;
+    state.resumeTrackId = "";
+    state.resumePositionMs = 0;
     renderTracks();
     updateNowPlaying(null);
+    schedulePlayerStateSave();
   });
-  els.select.addEventListener("click", () => currentTrack() && selectTrack(state.currentIndex, true));
+  els.sourceSelect.addEventListener("change", () => switchSource(els.sourceSelect.value));
   els.more.addEventListener("click", () => {
     const track = currentTrack();
     if (track?.permalink_url) window.open(track.permalink_url, "_blank", "noopener");
   });
 
   els.trackList.addEventListener("scroll", () => {
-    const max = els.trackList.scrollHeight - els.trackList.clientHeight;
-    const percent = max ? (els.trackList.scrollTop / max) * 100 : 0;
-    els.scrollThumb.style.setProperty("--scroll", `${Math.min(92, percent * 0.92)}%`);
+    state.playlistScrollTop = els.trackList.scrollTop;
+    syncPlaylistScrollbar();
+    schedulePlayerStateSave();
   });
 
   els.audio.addEventListener("timeupdate", () => updateProgress(els.audio.currentTime * 1000, els.audio.duration * 1000 || currentTrack()?.duration));
@@ -1045,13 +1659,32 @@ function bindEvents() {
     setPlaying(false);
   });
 
-  document.querySelector(".window-button.minimize").addEventListener("click", () => {
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "hidden") persistPlayerState();
+  });
+  window.addEventListener("pagehide", persistPlayerState);
+
+  document.querySelector(".window-button.minimize").addEventListener("click", async () => {
+    await persistPlayerState();
+    if (isPlayerWindow && globalThis.chrome?.windows) {
+      const currentWindow = await chrome.windows.getCurrent().catch(() => null);
+      if (currentWindow?.id != null) {
+        await chrome.windows.update(currentWindow.id, { state: "minimized" }).catch(() => {});
+        return;
+      }
+    }
     window.close();
   });
-  document.querySelector(".player-window > .titlebar .window-button.close").addEventListener("click", () => window.close());
+  document.querySelector(".player-window > .titlebar .window-button.close").addEventListener("click", async () => {
+    await persistPlayerState();
+    window.close();
+  });
 }
 
 async function initialize() {
+  document.body.classList.toggle("visualizer-only", isVisualizerWindow);
+  document.body.classList.toggle("player-window-mode", isPlayerWindow);
+  els.expandPlayer.hidden = isPlayerWindow || isVisualizerWindow;
   buildEqualizer();
   buildVisualizer();
   bindEvents();
@@ -1059,21 +1692,42 @@ async function initialize() {
     chromeampSessionId: "",
     chromeampProfile: null,
     chromeampOAuthStatus: null,
+    chromeampPlayerState: null,
     volume: 82,
+    balance: 0,
     eqEnabled: false,
     eqAuto: false,
     eqValues: Array(11).fill(0)
   });
   state.sessionId = saved.chromeampSessionId || "";
   state.profile = saved.chromeampProfile || null;
+  const savedPlayerState = saved.chromeampPlayerState || {};
+  state.resumeTrackId = typeof savedPlayerState.trackId === "string" ? savedPlayerState.trackId : "";
+  state.resumePositionMs = Math.max(0, Number(savedPlayerState.positionMs) || 0);
+  state.playlistScrollTop = Math.max(0, Number(savedPlayerState.playlistScrollTop) || 0);
+  state.shuffle = Boolean(savedPlayerState.shuffle);
+  state.savedShuffleQueueIds = Array.isArray(savedPlayerState.shuffleQueue) ? savedPlayerState.shuffleQueue : [];
+  state.savedShuffleHistoryIds = Array.isArray(savedPlayerState.shuffleHistory) ? savedPlayerState.shuffleHistory : [];
+  state.repeat = Boolean(savedPlayerState.repeat);
+  state.sourceMode = savedPlayerState.sourceMode === "likes" ? "likes" : "station";
+  state.visualizerMode = isVisualizerWindow
+    ? requestedVisualizerMode
+    : savedPlayerState.visualizerMode === "seanWasHere" ? "seanWasHere" : "geiss";
   els.volume.value = String(saved.volume ?? 82);
   els.audio.volume = Number(els.volume.value) / 100;
+  els.balance.value = String(saved.balance ?? 0);
   state.eqEnabled = Boolean(saved.eqEnabled);
   state.eqAuto = Boolean(saved.eqAuto);
   state.eqValues = Array.isArray(saved.eqValues) && saved.eqValues.length === 11
     ? saved.eqValues.map((value) => Math.max(-12, Math.min(12, Number(value) || 0)))
     : Array(11).fill(0);
   applyEqSettings();
+  setButtonState(els.shuffle, state.shuffle);
+  els.shuffle.title = state.shuffle ? "Shuffle on" : "Shuffle off";
+  setButtonState(els.repeat, state.repeat);
+  syncVisualizerMode();
+  updateSourceInterface();
+  toggleEqualizerPanel(Boolean(savedPlayerState.equalizerOpen));
   updateRangeVisual(els.volume);
   updateRangeVisual(els.balance);
   updateRangeVisual(els.seek);
@@ -1083,17 +1737,34 @@ async function initialize() {
     chrome.runtime.sendMessage({ type: "chromeamp:clearBadge" }).catch(() => {});
   }
 
-  if (state.sessionId) {
-    await fetchLikes();
-  } else {
+  if (state.sessionId) await fetchLikes();
+  await fetchStation();
+  if (!state.stationTracks.length && !state.likesTracks.length) {
     renderTracks();
     updateNowPlaying(null);
+  }
+  if (!state.sessionId) {
     if (saved.chromeampOAuthStatus?.state === "error") {
       showToast(saved.chromeampOAuthStatus.message || "SoundCloud connection failed", 5000);
     } else if (saved.chromeampOAuthStatus?.state === "pending") {
       showToast("SoundCloud authorization is still waiting to finish", 4000);
     }
   }
+
+  if (savedPlayerState.visualizerOpen || isVisualizerWindow) await openGeissVisualizer();
+  if (isVisualizerWindow) syncGeissFullscreenState();
+
+  if (globalThis.chrome?.runtime?.sendMessage) {
+    const response = await chrome.runtime.sendMessage({
+      type: "chromeamp:getPlaybackState",
+      target: "background"
+    }).catch(() => null);
+    if (response?.ok && response.playback) applyPlaybackState(response.playback);
+  }
+
+  state.stationPollTimer = setInterval(() => {
+    fetchStation({ quiet: true });
+  }, 5000);
 
   animateVisualizer();
 }

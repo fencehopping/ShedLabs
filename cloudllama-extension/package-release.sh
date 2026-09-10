@@ -15,6 +15,8 @@ trap cleanup_release_stage EXIT
 mkdir -p "$release_dir"
 cp "$extension_root/manifest.json" "$release_stage/"
 cp "$extension_root/background.js" "$release_stage/"
+cp "$extension_root/offscreen.html" "$release_stage/"
+cp "$extension_root/offscreen.js" "$release_stage/"
 cp "$extension_root/player.html" "$release_stage/"
 cp "$extension_root/player.js" "$release_stage/"
 cp "$extension_root/styles.css" "$release_stage/"

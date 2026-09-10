@@ -127,14 +127,29 @@ test("HLS manifests route playlists, segments, maps, and keys through localhost"
   assert.equal(rewritten.includes("https://cf-hls-media.sndcdn.com/media/segment-1.m4s\n"), false);
 });
 
-test("health is public while API routes require an opaque session", async (context) => {
+test("health and public playback are available without a listener login", async (context) => {
+  const originalFetch = global.fetch;
+  global.fetch = async (input, options) => {
+    const url = new URL(String(input));
+    if (url.origin === "https://secure.soundcloud.com" && url.pathname === "/oauth/token") {
+      assert.match(options.headers.Authorization, /^Basic /);
+      return Response.json({
+        access_token: "public-radio-token",
+        refresh_token: "public-radio-refresh",
+        expires_in: 3600,
+        scope: ""
+      });
+    }
+    return originalFetch(input, options);
+  };
+  context.after(() => { global.fetch = originalFetch; });
   const server = createServer();
   await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
   context.after(() => new Promise((resolve) => server.close(resolve)));
   const address = server.address();
   const origin = `http://127.0.0.1:${address.port}`;
 
-  const healthResponse = await fetch(`${origin}/health`);
+  const healthResponse = await originalFetch(`${origin}/health`);
   assert.equal(healthResponse.status, 200);
   assert.deepEqual(await healthResponse.json(), {
     ok: true,
@@ -142,19 +157,20 @@ test("health is public while API routes require an opaque session", async (conte
     redirectUri: config.redirectUri
   });
 
-  const unauthorizedResponse = await fetch(`${origin}/api/me`);
+  const unauthorizedResponse = await originalFetch(`${origin}/api/me`);
   assert.equal(unauthorizedResponse.status, 401);
 
-  const unauthorizedTicket = await fetch(`${origin}/api/media-ticket?url=${encodeURIComponent("https://cf-hls-media.sndcdn.com/media/track.m3u8")}`);
-  assert.equal(unauthorizedTicket.status, 401);
+  const publicTicket = await originalFetch(`${origin}/api/media-ticket?url=${encodeURIComponent("https://cf-hls-media.sndcdn.com/media/track.m3u8")}`);
+  assert.equal(publicTicket.status, 200);
+  assert.match((await publicTicket.json()).path, /^\/media\//);
 
-  const invalidMediaTicket = await fetch(`${origin}/media/not-a-ticket?url=${encodeURIComponent("https://cf-hls-media.sndcdn.com/media/track.m3u8")}`);
+  const invalidMediaTicket = await originalFetch(`${origin}/media/not-a-ticket?url=${encodeURIComponent("https://cf-hls-media.sndcdn.com/media/track.m3u8")}`);
   assert.equal(invalidMediaTicket.status, 401);
 
-  const untrustedStart = await fetch(`${origin}/auth/soundcloud/start`, { redirect: "manual" });
+  const untrustedStart = await originalFetch(`${origin}/auth/soundcloud/start`, { redirect: "manual" });
   assert.equal(untrustedStart.status, 400);
 
-  const trustedStart = await fetch(
+  const trustedStart = await originalFetch(
     `${origin}/auth/soundcloud/start?complete_redirect=${encodeURIComponent("https://abcdefghijklmnopabcdefghijklmnop.chromiumapp.org/soundcloud")}`,
     { redirect: "manual" }
   );
@@ -169,6 +185,14 @@ test("station authorizes JGilla, rotates fallback tracks, and accepts live selec
   const originalFetch = global.fetch;
   global.fetch = async (input) => {
     const url = new URL(String(input));
+    if (url.origin === "https://secure.soundcloud.com" && url.pathname === "/oauth/token") {
+      return Response.json({
+        access_token: "public-radio-token",
+        refresh_token: "public-radio-refresh",
+        expires_in: 3600,
+        scope: ""
+      });
+    }
     if (url.pathname === "/resolve") {
       const resourceUrl = url.searchParams.get("url");
       if (resourceUrl === "https://soundcloud.com/thesoundoftrees") {
@@ -218,6 +242,12 @@ test("station authorizes JGilla, rotates fallback tracks, and accepts live selec
   context.after(() => new Promise((resolve) => server.close(resolve)));
   const origin = `http://127.0.0.1:${server.address().port}`;
   const headers = { Authorization: `Bearer ${token}` };
+
+  const publicResponse = await originalFetch(`${origin}/api/station`);
+  assert.equal(publicResponse.status, 200);
+  const publicStation = await publicResponse.json();
+  assert.equal(publicStation.canDj, false);
+  assert.equal(publicStation.tracks[0].title, "Fallback track");
 
   const automaticResponse = await originalFetch(`${origin}/api/station`, { headers });
   assert.equal(automaticResponse.status, 200);

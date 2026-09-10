@@ -1,13 +1,16 @@
 {
   "manifest_version": 3,
   "name": "Cloud Llama",
-  "version": "0.3.0",
+  "version": "0.4.2",
   "description": "A retro desktop-style player for your SoundCloud likes.",
-  "permissions": ["storage", "identity"],
+  "permissions": ["storage", "identity", "offscreen"],
   "host_permissions": [
     "https://shedlabs.onrender.com/*",
     "https://*.sndcdn.com/*"
   ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'; frame-src https://player.vimeo.com;"
+  },
   "background": {
     "service_worker": "background.js"
   },

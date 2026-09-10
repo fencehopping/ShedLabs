@@ -52,6 +52,8 @@ const config = {
 const oauthAttempts = new Map();
 const oauthClaims = new Map();
 const mediaTickets = new Map();
+let applicationSession = null;
+let applicationSessionRefresh = null;
 const station = {
   fallbackTracks: [],
   fallbackLoad: null,
@@ -194,6 +196,7 @@ function requireSession(req, res) {
 }
 
 function attachUpdatedSession(res, session) {
+  if (session?.application) return;
   res.setHeader("X-Cloud-Llama-Session", sealSession(session));
 }
 
@@ -222,7 +225,75 @@ function applyTokens(session, payload) {
   session.scope = payload.scope || session.scope || "";
 }
 
+async function clientCredentialsTokenRequest() {
+  const credentials = Buffer.from(`${config.clientId}:${config.clientSecret}`).toString("base64");
+  const response = await fetch(`${SOUNDCLOUD_AUTH}/oauth/token`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json; charset=utf-8",
+      "Content-Type": "application/x-www-form-urlencoded",
+      Authorization: `Basic ${credentials}`
+    },
+    body: new URLSearchParams({ grant_type: "client_credentials" })
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok || !payload.access_token) {
+    const error = new Error("SoundCloud rejected the public radio connection");
+    error.status = response.status || 503;
+    throw error;
+  }
+  return payload;
+}
+
+async function getApplicationSession(forceRefresh = false) {
+  const reusable = applicationSession
+    && applicationSession.tokenExpiresAt - Date.now() > REFRESH_EARLY_MS;
+  if (reusable && !forceRefresh) return applicationSession;
+  if (applicationSessionRefresh) return applicationSessionRefresh;
+
+  applicationSessionRefresh = (async () => {
+    let payload;
+    if (applicationSession?.refreshToken) {
+      try {
+        payload = await tokenRequest({
+          grant_type: "refresh_token",
+          client_id: config.clientId,
+          client_secret: config.clientSecret,
+          refresh_token: applicationSession.refreshToken
+        });
+      } catch {
+        payload = await clientCredentialsTokenRequest();
+      }
+    } else {
+      payload = await clientCredentialsTokenRequest();
+    }
+    if (!applicationSession) {
+      applicationSession = {
+        application: true,
+        sessionId: "cloud-llama-public-radio",
+        accessToken: "",
+        refreshToken: "",
+        tokenExpiresAt: 0,
+        sessionExpiresAt: Number.MAX_SAFE_INTEGER,
+        lastSeenAt: Date.now(),
+        scope: "",
+        profile: null
+      };
+    }
+    applyTokens(applicationSession, payload);
+    applicationSession.lastSeenAt = Date.now();
+    return applicationSession;
+  })().finally(() => {
+    applicationSessionRefresh = null;
+  });
+  return applicationSessionRefresh;
+}
+
 async function refreshSession(session) {
+  if (session.application) {
+    await getApplicationSession(true);
+    return;
+  }
   if (!session.refreshToken) throw new Error("SoundCloud refresh token is unavailable");
   const payload = await tokenRequest({
     grant_type: "refresh_token",
@@ -749,9 +820,23 @@ async function route(req, res) {
     return;
   }
 
-  const authenticated = requireSession(req, res);
-  if (!authenticated) return;
-  const { session } = authenticated;
+  const publicPlaybackRoute = req.method === "GET" && (
+    url.pathname === "/api/station"
+    || url.pathname === "/api/media-ticket"
+    || url.pathname === "/api/transcoding"
+    || (url.pathname.startsWith("/api/tracks/") && url.pathname.endsWith("/streams"))
+  );
+  const listenerSession = openSession(bearerToken(req));
+  let session = listenerSession;
+  if (session) {
+    session.lastSeenAt = Date.now();
+    session.sessionExpiresAt = Date.now() + SESSION_TTL_MS;
+  } else if (publicPlaybackRoute) {
+    session = await getApplicationSession();
+  } else {
+    sendError(res, 401, "Cloud Llama session is missing or expired");
+    return;
+  }
 
   if (req.method === "POST" && url.pathname === "/auth/logout") {
     for (const [ticketId, ticket] of mediaTickets) {
