@@ -36,6 +36,11 @@ function loadEnv(filePath = path.join(__dirname, ".env")) {
 loadEnv();
 
 const renderExternalUrl = (process.env.RENDER_EXTERNAL_URL || "").replace(/\/$/, "");
+const configuredDjProfileUrls = process.env.CLOUD_LLAMA_DJ_PROFILE_URLS
+  || [
+    process.env.CLOUD_LLAMA_DJ_PROFILE_URL || "https://soundcloud.com/jgilla-1",
+    "https://soundcloud.com/fencehopping"
+  ].join(",");
 
 const config = {
   clientId: process.env.SOUNDCLOUD_CLIENT_ID || "",
@@ -43,7 +48,7 @@ const config = {
   redirectUri: process.env.SOUNDCLOUD_REDIRECT_URI || (renderExternalUrl
     ? `${renderExternalUrl}/auth/soundcloud/callback`
     : "http://127.0.0.1:8787/auth/soundcloud/callback"),
-  djProfileUrl: process.env.CLOUD_LLAMA_DJ_PROFILE_URL || "https://soundcloud.com/jgilla-1",
+  djProfileUrls: configuredDjProfileUrls.split(",").map((value) => value.trim()).filter(Boolean),
   stationFallbackUrl: process.env.CLOUD_LLAMA_STATION_FALLBACK_URL || "https://soundcloud.com/thesoundoftrees/likes",
   host: process.env.CHROMEAMP_SERVER_HOST || (process.env.RENDER ? "0.0.0.0" : "127.0.0.1"),
   port: Number(process.env.CHROMEAMP_SERVER_PORT || process.env.PORT || 8787)
@@ -473,7 +478,8 @@ function automaticStationPosition(tracks, now = Date.now()) {
 }
 
 function isStationDj(session) {
-  return canonicalSoundCloudUrl(session?.profile?.permalink_url) === canonicalSoundCloudUrl(config.djProfileUrl);
+  const profileUrl = canonicalSoundCloudUrl(session?.profile?.permalink_url);
+  return Boolean(profileUrl) && config.djProfileUrls.some((value) => canonicalSoundCloudUrl(value) === profileUrl);
 }
 
 async function stationSnapshot(session, now = Date.now()) {
@@ -531,7 +537,7 @@ async function controlStation(req, res, session) {
     station.liveStartedAt = Date.now();
     station.liveDj = {
       username: session.profile?.username || "JGilla",
-      permalink_url: session.profile?.permalink_url || config.djProfileUrl
+      permalink_url: session.profile?.permalink_url || config.djProfileUrls[0] || ""
     };
     station.revision += 1;
   } else {

@@ -181,7 +181,7 @@ test("health and public playback are available without a listener login", async 
   assert.equal(authorizeUrl.searchParams.get("redirect_uri"), config.redirectUri);
 });
 
-test("station authorizes JGilla, rotates fallback tracks, and accepts live selections", async (context) => {
+test("station authorizes configured DJs, rotates fallback tracks, and accepts live selections", async (context) => {
   const originalFetch = global.fetch;
   global.fetch = async (input) => {
     const url = new URL(String(input));
@@ -255,6 +255,22 @@ test("station authorizes JGilla, rotates fallback tracks, and accepts live selec
   assert.equal(automatic.canDj, true);
   assert.equal(automatic.mode, "automatic");
   assert.equal(automatic.tracks[0].title, "Fallback track");
+
+  const fencehoppingToken = sealSession({
+    sessionId: "fencehopping-dj-session",
+    accessToken: "access-token",
+    refreshToken: "refresh-token",
+    tokenExpiresAt: Date.now() + 60 * 60 * 1000,
+    sessionExpiresAt: Date.now() + 86_400_000,
+    lastSeenAt: Date.now(),
+    scope: "",
+    profile: { id: 201, username: "fencehopping", permalink_url: "https://soundcloud.com/fencehopping" }
+  });
+  const fencehoppingResponse = await originalFetch(`${origin}/api/station`, {
+    headers: { Authorization: `Bearer ${fencehoppingToken}` }
+  });
+  assert.equal(fencehoppingResponse.status, 200);
+  assert.equal((await fencehoppingResponse.json()).canDj, true);
 
   const liveResponse = await originalFetch(`${origin}/api/station/dj`, {
     method: "POST",

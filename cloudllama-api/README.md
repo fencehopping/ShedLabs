@@ -17,12 +17,14 @@ Add these secret environment variables in Render:
 - `SOUNDCLOUD_CLIENT_ID`
 - `SOUNDCLOUD_CLIENT_SECRET`
 
-Cloud Llama Radio defaults to the public Likes at `https://soundcloud.com/thesoundoftrees/likes`, with `https://soundcloud.com/jgilla-1` authorized to take the station live. Override either source with these optional variables:
+Cloud Llama Radio defaults to the public Likes at `https://soundcloud.com/thesoundoftrees/likes`, with `https://soundcloud.com/jgilla-1` and `https://soundcloud.com/fencehopping` authorized to take the station live. Override either source with these optional variables:
 
 ```text
-CLOUD_LLAMA_DJ_PROFILE_URL=https://soundcloud.com/jgilla-1
+CLOUD_LLAMA_DJ_PROFILE_URLS=https://soundcloud.com/jgilla-1,https://soundcloud.com/fencehopping
 CLOUD_LLAMA_STATION_FALLBACK_URL=https://soundcloud.com/thesoundoftrees/likes
 ```
+
+`CLOUD_LLAMA_DJ_PROFILE_URLS` is a comma-separated allowlist. The legacy singular `CLOUD_LLAMA_DJ_PROFILE_URL` remains supported and is combined with the built-in `fencehopping` account during migration.
 
 Render supplies `RENDER_EXTERNAL_URL`, `PORT`, and `RENDER`. Cloud Llama uses those values automatically, so no host, port, or callback environment variable is needed.
 
